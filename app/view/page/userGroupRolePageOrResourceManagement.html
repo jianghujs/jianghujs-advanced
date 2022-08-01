@@ -3,19 +3,19 @@
 {% block vue_template %}
 
 <jh-layout-v3>
+<template v-slot:serverSearch>
+  <div class="d-flex">
+    <v-spacer></v-spacer>
+    <v-tabs v-model="pageTab" slider-size="0" class="mt-2" color="success" active-class="customActiveClass" style="width: auto; flex: none; border-radius: 5px; overflow: hidden;">
+      <v-tab>接口权限管理</v-tab>
+      <v-tab>页面权限管理</v-tab>
+    </v-tabs>
+  </div>
+</template>
 
   <!-- 页面主要内容 -->
   <v-container class="fullScreen d-flex flex-column pa-xs-0 pa-0">
     <v-card>
-      <v-row class="ma-0 pa-xs-4 align-center flex-none pt-0 " :class="{'pa-4': !isMobile, 'pb-0': !isMobile, 'pa-2': isMobile}">
-        <v-col cols="12" xs="12" sm="12" md="12" xl="12" class="pl-0">
-          <v-tabs v-model="pageTab" color="success">
-            <v-tabs-slider color="success"></v-tabs-slider>
-            <v-tab>接口权限管理</v-tab>
-            <v-tab>页面权限管理</v-tab>
-          </v-tabs>
-        </v-col>
-      </v-row>
       <v-row class="ma-0 pa-xs-4 align-center flex-none pt-0 " :class="{'pa-4': !isMobile, 'pb-0': !isMobile, 'pa-2': isMobile}">
 
         <v-col cols="12" xs="4" sm="4" md="4" xl="4" class="pl-0">
@@ -377,6 +377,11 @@
     }
   })
 </script>
-
+<style>
+.customActiveClass {
+  background: #4caf50 !important;
+  color: #ffffff!important;
+}
+</style>
 
 {% endblock %}
