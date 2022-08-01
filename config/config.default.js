@@ -1,15 +1,15 @@
 'use strict';
 
-const { middleware, middlewareMatch } = require('egg-jianghu/config/middlewareConfig');
+const { middleware, middlewareMatch } = require('@jianghujs/jianghu/config/middlewareConfig');
 const path = require('path');
 const assert = require('assert');
-const eggJianghuPathTemp = require.resolve('egg-jianghu');
+const eggJianghuPathTemp = require.resolve('@jianghujs/jianghu');
 const eggJianghuPath = path.join(eggJianghuPathTemp, '../');
 
 module.exports = appInfo => {
   assert(appInfo);
 
-  const appId = 'demo_advanced';
+  const appId = 'jianghujs-advanced';
   const uploadDir = path.join(appInfo.baseDir, 'upload');
   const downloadBasePath = `/${appId}/upload`;
 
@@ -20,7 +20,7 @@ module.exports = appInfo => {
     appLogo: `${appId}/public/img/logo.png`,
     appType: 'single', // single: 单应用; multiApp: 多应用
     appDirectoryLink: '/',
-    indexPage: `/${appId}/page/manual`,
+    indexPage: `/${appId}/page/userManagement`,
     loginPage: `/${appId}/page/login`,
     helpPage: `/${appId}/page/help`,
     uploadDir,

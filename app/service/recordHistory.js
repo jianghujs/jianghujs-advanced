@@ -1,6 +1,6 @@
 'use strict';
 
-const validateUtil = require('egg-jianghu/app/common/validateUtil');
+const validateUtil = require('@jianghujs/jianghu/app/common/validateUtil');
 const Service = require('egg').Service;
 const { tableEnum } = require('../constant/constant');
 const { BizError, errorInfoEnum } = require('../constant/error');

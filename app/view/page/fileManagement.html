@@ -1,107 +1,118 @@
-{% extends 'template/jhTemplate.html'%}
+{% extends 'template/jhTemplateV3.html'%}
 
 {% block vue_template %}
 
-<jh-layout>
+<jh-layout-v3>
 
   <!-- 页面主要内容 -->
   <v-container class="fullScreen d-flex flex-column pa-xs-0 pa-0">
-    <v-row class="ma-0 pa-xs-4 align-center flex-none pt-0 " :class="{'pa-4': !isMobile, 'pb-0': !isMobile, 'pa-2': isMobile}">
+    <v-card>
+      <v-row class="ma-0 pa-xs-4 align-center flex-none pt-0 " :class="{'pa-4': !isMobile, 'pb-0': !isMobile, 'pa-2': isMobile}">
 
-      <v-col cols="12" xs="4" sm="4" md="4" xl="4" class="pl-0">
-        <v-btn color="success" small dark class="elevation-0 mr-2" @click="doUiAction('startCreateItem', null)">新增
-        </v-btn>
-        <span class="body-2">共{{ tableData.length }}条记录</span>
-      </v-col>
+        <v-col cols="12" xs="4" sm="4" md="4" xl="4" class="pl-0">
+          <v-btn color="success" dark class="elevation-0 mr-2" @click="doUiAction('startCreateItem', null)">新增
+          </v-btn>
+          <span class="body-2">共{{ tableData.length }}条记录</span>
+        </v-col>
 
-      <v-spacer></v-spacer>
+        <v-spacer></v-spacer>
 
-      <v-col cols="12" xs="8" sm="4" md="3" xl="3" class="pa-xs-0 pa-xs-2 col-sm-8-flex">
-        <v-text-field v-model="searchInput" label="表格过滤" class="cus-v-input" dense outlined></v-text-field>
-      </v-col>
+        <v-col cols="12" xs="8" sm="4" md="3" xl="3" class="pa-xs-0 pa-xs-2 col-sm-8-flex">
+          <v-text-field v-model="searchInput" label="表格过滤" class="cus-v-input" dense filled single-line></v-text-field>
+        </v-col>
 
-    </v-row>
-    <v-data-table fixed-header
-                  :headers="headers"
-                  :items="tableData"
-                  :search="searchInput"
-                  :footer-props="{ itemsPerPageOptions: [20, 40, 60, 100, -1] }"
-                  :items-per-page="20"
-                  :loading="isTableLoading"
-                  checkbox-color="success"
-                  mobile-breakpoint="0"
-                  class="elevation-0 mt-0 mb-xs-4 flex-fill d-flex flex-column">
-      <template v-slot:item.downloadPath="{ item }">
-        <a href="javascript:;" @click="doUiAction('downloadFileByStream', {item})">{{item.downloadPath}}</a>
-      </template>
-      <template v-slot:item.action="{ item }">
-        <v-btn :small="!isMobile" class="mr-2 success" @click="doUiAction('startUpdateItem', {item})">
-          修改
-        </v-btn>
-        <v-btn :small="!isMobile" class="mr-2 error" @click="doUiAction('deleteItem', {item})">
-          删除
-        </v-btn>
-      </template>
-    </v-data-table>
+      </v-row>
+      <v-data-table fixed-header
+                    :headers="headers"
+                    :items="tableData"
+                    :search="searchInput"
+                    :footer-props="{ itemsPerPageOptions: [20, 40, 60, 100, -1] }"
+                    :items-per-page="20"
+                    :loading="isTableLoading"
+                    checkbox-color="success"
+                    mobile-breakpoint="0"
+                    class="elevation-0 mt-0 mb-xs-4 flex-fill d-flex flex-column">
+        <template v-slot:item.downloadPath="{ item }">
+          <a href="javascript:;" @click="doUiAction('downloadFileByStream', {item})">{{item.downloadPath}}</a>
+        </template>
+        <template v-slot:item.action="{ item }">
+          <v-btn :small="!isMobile" class="mr-2 success" @click="doUiAction('startUpdateItem', {item})">
+            修改
+          </v-btn>
+          <v-btn :small="!isMobile" class="mr-2 error" @click="doUiAction('deleteItem', {item})">
+            删除
+          </v-btn>
+        </template>
+      </v-data-table>
+    </v-card>
   </v-container>
 
+<v-overlay app :value="isEditDrawerShow"></v-overlay>
   <!-- 编辑抽屉 -->
-  <v-navigation-drawer v-model="isEditDrawerShow" absolute temporary right width="80%" hide-overlay class="elevation-24">
+  <v-navigation-drawer v-model="isEditDrawerShow" fixed temporary right width="80%" hide-overlay class="elevation-24">
     <v-form v-model="isFormValid" ref="form" lazy-validation>
-      <v-row>
-        <span class="title pa-6">{{ currentClickButton.title }}文件</span>
+      <v-row class="pt-8">
+        <span class="title pa-6" :class="{'pl-12': !isMobile, 'pl-8': isMobile}">{{ currentClickButton.title }}文件</span>
         <v-spacer></v-spacer>
-        <v-btn class="mt-7 mr-8 elevation-0" fab x-small @click="isEditDrawerShow = false">
+        <v-btn class="mt-6 elevation-0" :class="{'mr-16': !isMobile, 'mr-8': isMobile}" fab x-small @click="isEditDrawerShow = false">
           <v-icon dark>mdi-close</v-icon>
         </v-btn>
       </v-row>
-      <v-row class="pa-0 ma-0 pa-xs-4 pb-xs-4 flex-none" v-if="isEditDrawerShow">
+      <v-row :class="{'px-10': !isMobile, 'px-4': isMobile, 'pb-7': isMobile}" v-if="isEditDrawerShow">
         <template v-if="currentClickButton.action === 'add'">
-          <v-col cols="12" sm="12" md="6" xl="6" class="pa-xs-0 pb-xs-4 pb-3">
-            <v-file-input v-model="inputFile" class="cus-v-input mr-2" dense outlined chips label="请选择文件" ></v-file-input>
+          <v-col cols="12" sm="12" md="6" xl="6" :class="{'pa-0': isMobile, 'px-4': isMobile, 'pt-6': isMobile}">
+            <span style="color: #3F4254;" :style="{'line-height': isMobile ? '20px' : '42px', 'font-weight': isMobile ? 400 : 500}">请选择文件</span>
+            <v-file-input v-model="inputFile" class="cus-v-input mr-2" dense filled single-line chips label="请选择文件" ></v-file-input>
           </v-col>
-          <v-col cols="12" sm="12" md="12" xl="12" class="pa-xs-0 pb-xs-4 pb-3">
-            <v-textarea class="cus-v-input mr-2" dense outlined label="文件描述" v-model="editItem.fileDesc" :rules="requireRules"></v-textarea>
+          <v-col cols="12" sm="12" md="12" xl="12" :class="{'pa-0': isMobile, 'px-4': isMobile, 'pt-6': isMobile}">
+            <span style="color: #3F4254;" :style="{'line-height': isMobile ? '20px' : '42px', 'font-weight': isMobile ? 400 : 500}">文件描述</span>
+            <v-textarea class="cus-v-input mr-2" dense filled single-line label="文件描述" v-model="editItem.fileDesc" :rules="requireRules"></v-textarea>
           </v-col>
         </template>
         <template  v-if="currentClickButton.action === 'edit'">
-          <v-col cols="12" sm="12" md="4" xl="3" class="pa-xs-0 pb-xs-4 pb-3">
-            <v-text-field class="cus-v-input mr-2" dense outlined label="文件ID" v-model="editItem.fileId" disabled></v-text-field>
+          <v-col cols="12" sm="12" md="4" :class="{'pa-0': isMobile, 'px-4': isMobile, 'pt-6': isMobile}">
+            <span style="color: #3F4254;" :style="{'line-height': isMobile ? '20px' : '42px', 'font-weight': isMobile ? 400 : 500}">文件ID</span>
+            <v-text-field class="cus-v-input mr-2" dense filled single-line label="文件ID" v-model="editItem.fileId" disabled></v-text-field>
           </v-col>
-          <v-col cols="12" sm="12" md="4" xl="3" class="pa-xs-0 pb-xs-4 pb-3">
-            <v-text-field class="cus-v-input mr-2" dense outlined label="文件存储位置" v-model="editItem.fileDirectory" disabled></v-text-field>
+          <v-col cols="12" sm="12" md="4" :class="{'pa-0': isMobile, 'px-4': isMobile, 'pt-6': isMobile}">
+            <span style="color: #3F4254;" :style="{'line-height': isMobile ? '20px' : '42px', 'font-weight': isMobile ? 400 : 500}">文件存储位置</span>
+            <v-text-field class="cus-v-input mr-2" dense filled single-line label="文件存储位置" v-model="editItem.fileDirectory" disabled></v-text-field>
           </v-col>
-          <v-col cols="12" sm="12" md="4" xl="3" class="pa-xs-0 pb-xs-4 pb-3">
-            <v-text-field class="cus-v-input mr-2" dense outlined label="文件名" v-model="editItem.filename" disabled></v-text-field>
+          <v-col cols="12" sm="12" md="4" :class="{'pa-0': isMobile, 'px-4': isMobile, 'pt-6': isMobile}">
+            <span style="color: #3F4254;" :style="{'line-height': isMobile ? '20px' : '42px', 'font-weight': isMobile ? 400 : 500}">文件名</span>
+            <v-text-field class="cus-v-input mr-2" dense filled single-line label="文件名" v-model="editItem.filename" disabled></v-text-field>
           </v-col>
-          <v-col cols="12" sm="12" md="4" xl="3" class="pa-xs-0 pb-xs-4 pb-3">
-            <v-text-field class="cus-v-input mr-2" dense outlined label="文件保存名" v-model="editItem.filenameStorage" disabled></v-text-field>
+          <v-col cols="12" sm="12" md="4" :class="{'pa-0': isMobile, 'px-4': isMobile, 'pt-6': isMobile}">
+          <span style="color: #3F4254;" :style="{'line-height': isMobile ? '20px' : '42px', 'font-weight': isMobile ? 400 : 500}">文件保存名</span>
+            <v-text-field class="cus-v-input mr-2" dense filled single-line label="文件保存名" v-model="editItem.filenameStorage" disabled></v-text-field>
           </v-col>
-          <v-col cols="12" sm="12" md="4" xl="3" class="pa-xs-0 pb-xs-4 pb-3">
-            <v-text-field class="cus-v-input mr-2" dense outlined label="文件下载路径" v-model="editItem.downloadPath" disabled></v-text-field>
+          <v-col cols="12" sm="12" md="4" :class="{'pa-0': isMobile, 'px-4': isMobile, 'pt-6': isMobile}">
+          <span style="color: #3F4254;" :style="{'line-height': isMobile ? '20px' : '42px', 'font-weight': isMobile ? 400 : 500}">文件下载路径</span>
+            <v-text-field class="cus-v-input mr-2" dense filled single-line label="文件下载路径" v-model="editItem.downloadPath" disabled></v-text-field>
           </v-col>
-          <v-col cols="12" sm="12" md="4" xl="3" class="pa-xs-0 pb-xs-4 pb-3">
-            <v-text-field class="cus-v-input mr-2" dense outlined label="文件大小" v-model="editItem.binarySize" disabled></v-text-field>
+          <v-col cols="12" sm="12" md="4" :class="{'pa-0': isMobile, 'px-4': isMobile, 'pt-6': isMobile}">
+          <span style="color: #3F4254;" :style="{'line-height': isMobile ? '20px' : '42px', 'font-weight': isMobile ? 400 : 500}">文件大小</span>
+            <v-text-field class="cus-v-input mr-2" dense filled single-line label="文件大小" v-model="editItem.binarySize" disabled></v-text-field>
           </v-col>
-          <v-col cols="12" sm="12" md="12" xl="12" class="pa-xs-0 pb-xs-4 pb-3">
-            <v-textarea class="cus-v-input mr-2" dense outlined label="文件描述" v-model="editItem.fileDesc" :rules="requireRules"></v-textarea>
+          <v-col cols="12" sm="12" md="12" xl="12" :class="{'pa-0': isMobile, 'px-4': isMobile, 'pt-6': isMobile}">
+            <span style="color: #3F4254;" :style="{'line-height': isMobile ? '20px' : '42px', 'font-weight': isMobile ? 400 : 500}">文件描述</span>
+            <v-textarea class="cus-v-input mr-2" dense filled single-line label="文件描述" v-model="editItem.fileDesc" :rules="requireRules"></v-textarea>
           </v-col>
         </template>
       </v-row>
-      <v-row class="justify-end pr-6">
-        <v-btn color="success" small @click="doUiAction(dialogSaveInfoAction)" :style="{width: isMobile ? 'calc(100% - 45px)' : '200px'}" :class="{'mb-2': isMobile, 'mr-4': isMobile}">保存</v-btn>
-        <v-btn class="ml-2" small @click="isEditDrawerShow = false" :style="{width: isMobile ? 'calc(100% - 45px)' : '200px'}" :class="{'mr-4': isMobile}">取消</v-btn>
+      <v-row class="justify-end mx-0 mt-8" :class="{'px-10': !isMobile, 'px-4': isMobile, 'mb-8': isMobile}">
+        <v-btn color="success" @click="doUiAction(dialogSaveInfoAction)">保存</v-btn>
+        <v-btn class="elevation-0 mr-2 ml-2" @click="isEditDrawerShow = false">取消</v-btn>
       </v-row>
     </v-form>
   </v-navigation-drawer>
 
-</jh-layout>
+</jh-layout-v3>
 
 {% endblock %}
 
 {% block vue_body %}
-{% include 'layout/jhLayout.html' %}
-{% include 'common/resetTableMaxHeight.html' %}
+
 <script type="module">
   new Vue({
     el: '#app',
