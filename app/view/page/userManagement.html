@@ -5,23 +5,22 @@
 <jh-layout-v3>
 
   <!-- 页面主要内容 -->
-  <v-container class="fullScreen d-flex flex-column pa-xs-0 pa-0">
-    <v-card>
-      <v-row class="ma-0 pa-xs-4 align-center flex-none pt-0 " :class="{'pa-4': !isMobile, 'pb-0': !isMobile, 'pa-2': isMobile}">
+    <v-card :class="{'px-2': isMobile}">
+      <v-row class="ma-0 align-center flex-none pt-0 " :class="{'pa-4': !isMobile, 'pb-0': !isMobile, 'pa-2': isMobile}">
 
-        <v-col cols="12" xs="4" sm="4" md="4" xl="4" class="pl-0">
+        <v-col cols="12" xs="12" sm="4" md="4" xl="4" class="pl-0">
           <v-btn color="success" dark class="elevation-0 mr-2" @click="doUiAction('startCreateItem', null)">新增</v-btn>
           <span class="body-2">共{{ tableData.length }}条记录</span>
         </v-col>
 
         <v-spacer></v-spacer>
 
-        <v-col cols="12" xs="8" sm="4" md="3" xl="3" class="pa-xs-0 pa-xs-2 col-sm-8-flex">
-          <v-text-field v-model="searchInput" label="表格过滤" class="cus-v-input" dense filled single-line></v-text-field>
+        <v-col cols="12" xs="8" sm="4" md="3" xl="3" class="px-0" >
+          <v-text-field v-model="searchInput" color="success" prefix="表格过滤：" class="cus-v-input" dense filled single-line></v-text-field>
         </v-col>
 
       </v-row>
-      <v-data-table fixed-header
+      <v-data-table
                     :headers="headers"
                     :items="tableData"
                     :search="searchInput"
@@ -30,7 +29,8 @@
                     :loading="isTableLoading"
                     checkbox-color="success"
                     mobile-breakpoint="0"
-                    class="elevation-0 mt-0 mb-xs-4 flex-fill d-flex flex-column">
+                    :class="{'mx-2': isMobile}"
+                    class="elevation-0 mt-0 flex-fill d-flex flex-column">
         <template v-slot:item.userType="{ item }">
           {{ getConstantCollectionItemText('userType', item.userType) }}
         </template>
@@ -55,44 +55,42 @@
         </template>
       </v-data-table>
     </v-card>
-  </v-container>
-  <v-overlay app :value="isEditDrawerShow"></v-overlay>
   <!-- 编辑抽屉 -->
-  <v-navigation-drawer v-model="isEditDrawerShow" fixed temporary right width="80%" hide-overlay
+  <v-navigation-drawer v-model="isEditDrawerShow" fixed temporary right width="80%"
                        class="elevation-24">
     <v-form v-model="isFormValid" v-if="isEditDrawerShow" ref="form" lazy-validation>
       <v-row class="pt-8">
-        <span class="title pa-6" :class="{'pl-12': !isMobile, 'pl-8': isMobile}">{{ currentClickButton.title }}信息</span>
+        <span class="title pa-6" :class="{'pl-12': !isMobile, 'pl-6': isMobile}">{{ currentClickButton.title }}信息</span>
         <v-spacer></v-spacer>
         <v-btn class="mt-6 elevation-0" :class="{'mr-16': !isMobile, 'mr-8': isMobile}" fab x-small @click="isEditDrawerShow = false">
           <v-icon dark>mdi-close</v-icon>
         </v-btn>
       </v-row>
-      <v-row v-if="currentClickButton.action === 'resetUserPassword'"  :class="{'px-10': !isMobile, 'px-4': isMobile, 'pb-7': isMobile}">
-        <v-col cols="12" sm="12" md="4" :class="{'pa-0': isMobile, 'px-4': isMobile, 'pt-6': isMobile}">
-          <span style="color: #3F4254;" :style="{'line-height': isMobile ? '20px' : '42px', 'font-weight': isMobile ? 400 : 500}">初始密码</span>
+      <v-row v-if="currentClickButton.action === 'resetUserPassword'"  :class="{'px-10': !isMobile, 'px-3': isMobile, 'pb-7': isMobile}">
+        <v-col cols="12" sm="12" md="4" :class="{'pa-0': isMobile, 'px-3': isMobile, 'pt-6': isMobile}">
+          <span class="inputLabel">初始密码</span>
           <v-text-field class="cus-v-input mr-2" dense filled single-line label="初始密码" v-model="editItem.clearTextPassword" :rules="requireRules"></v-text-field>
         </v-col>
       </v-row>
-      <v-row v-else  :class="{'px-10': !isMobile, 'px-4': isMobile, 'pb-7': isMobile}">
-        <v-col cols="12" sm="12" md="4" xl="3" class="pa-xs-0 pb-xs-4 pb-3" v-if="currentClickButton.action === 'add'">
-          <span style="color: #3F4254;" :style="{'line-height': isMobile ? '20px' : '42px', 'font-weight': isMobile ? 400 : 500}">用户ID[登陆]</span>
+      <v-row v-else  :class="{'px-10': !isMobile, 'px-3': isMobile, 'pb-7': isMobile}">
+        <v-col cols="12" sm="12" md="4" xl="3" class="pb-xs-4 pb-3" v-if="currentClickButton.action === 'add'">
+          <span class="inputLabel">用户ID[登陆]</span>
           <v-text-field class="cus-v-input mr-2" dense filled single-line label="用户ID[登陆]" v-model="editItem.userId"></v-text-field>
         </v-col>
-        <v-col cols="12" sm="12" md="4" :class="{'pa-0': isMobile, 'px-4': isMobile, 'pt-6': isMobile}">
-          <span style="color: #3F4254;" :style="{'line-height': isMobile ? '20px' : '42px', 'font-weight': isMobile ? 400 : 500}">用户名</span>
+        <v-col cols="12" sm="12" md="4" :class="{'pa-0': isMobile, 'px-3': isMobile, 'pt-6': isMobile}">
+          <span class="inputLabel">用户名</span>
           <v-text-field class="cus-v-input mr-2" dense filled single-line label="用户名" v-model="editItem.username" :rules="requireRules"></v-text-field>
         </v-col>
-        <v-col cols="12" sm="12" md="4" :class="{'pa-0': isMobile, 'px-4': isMobile, 'pt-6': isMobile}">
-          <span style="color: #3F4254;" :style="{'line-height': isMobile ? '20px' : '42px', 'font-weight': isMobile ? 400 : 500}">用户类型</span>
+        <v-col cols="12" sm="12" md="4" :class="{'pa-0': isMobile, 'px-3': isMobile, 'pt-6': isMobile}">
+          <span class="inputLabel">用户类型</span>
           <v-select class="cus-v-input mr-2" dense filled single-line clearable label="用户类型" v-model="editItem.userType" :items="constantCollection.userType"></v-select>
         </v-col>
-        <v-col cols="12" sm="12" md="4" :class="{'pa-0': isMobile, 'px-4': isMobile, 'pt-6': isMobile}">
-          <span style="color: #3F4254;" :style="{'line-height': isMobile ? '20px' : '42px', 'font-weight': isMobile ? 400 : 500}">用户状态</span>
+        <v-col cols="12" sm="12" md="4" :class="{'pa-0': isMobile, 'px-3': isMobile, 'pt-6': isMobile}">
+          <span class="inputLabel">用户状态</span>
           <v-select class="cus-v-input mr-2" dense filled single-line clearable label="用户状态" v-model="editItem.userStatus" :items="constantCollection.userStatus"></v-select>
         </v-col>
-        <v-col v-if="currentClickButton.action === 'add'" cols="12" sm="12" md="4" :class="{'pa-0': isMobile, 'px-4': isMobile, 'pt-6': isMobile}">
-          <span style="color: #3F4254;" :style="{'line-height': isMobile ? '20px' : '42px', 'font-weight': isMobile ? 400 : 500}">初始密码</span>
+        <v-col v-if="currentClickButton.action === 'add'" cols="12" sm="12" md="4" :class="{'pa-0': isMobile, 'px-3': isMobile, 'pt-6': isMobile}">
+          <span class="inputLabel">初始密码</span>
           <v-text-field class="cus-v-input mr-2" dense filled single-line label="初始密码" v-model="editItem.clearTextPassword" :rules="requireRules"></v-text-field>
         </v-col>
       </v-row>

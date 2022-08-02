@@ -3,35 +3,43 @@
 {% block vue_template %}
 
 <jh-layout-v3>
-  <template v-slot:serverSearch>
+  <template v-slot:topRightWidget v-if="isMobile">
+    <div class="d-flex mt-3" style="flex: 1">
+      <v-spacer></v-spacer>
+      <v-tabs v-model="pageTab" height="36" slider-size="0" class="mt-2" color="success" active-class="customActiveClass" style="width: auto; flex: none; border-radius: 5px; overflow: hidden;">
+        <v-tab>接口管理</v-tab>
+        <v-tab>页面管理</v-tab>
+      </v-tabs>
+    </div>
+  </template>
+  <template v-slot:serverSearch v-else>
     <div class="d-flex">
       <v-spacer></v-spacer>
-      <v-tabs v-model="pageTab" slider-size="0" class="mt-2" color="success" active-class="customActiveClass" style="width: auto; flex: none; border-radius: 5px; overflow: hidden;">
+      <v-tabs v-model="pageTab" height="36" slider-size="0" class="mt-2" color="success" active-class="customActiveClass" style="width: auto; flex: none; border-radius: 5px; overflow: hidden;">
         <v-tab>接口管理</v-tab>
         <v-tab>页面管理</v-tab>
       </v-tabs>
     </div>
   </template>
 
-  <!-- 页面主要内容 -->
-  <v-container class="fullScreen d-flex flex-column pa-xs-0 pa-0">
-    <v-card>
-      <v-row class="ma-0 pa-xs-4 align-center flex-none pt-0 " :class="{'pa-4': !isMobile, 'pb-0': !isMobile, 'pa-2': isMobile}">
 
-        <v-col cols="12" xs="4" sm="4" md="4" xl="4" class="pl-0">
+  <!-- 页面主要内容 -->
+    <v-card :class="{'px-2': isMobile}">
+      <v-row class="ma-0 align-center flex-none pt-0 " :class="{'pa-4': !isMobile, 'pb-0': !isMobile, 'pa-2': isMobile}">
+
+        <v-col cols="12" xs="12" sm="4" md="4" xl="4" class="px-0">
           <v-btn color="success" dark class="elevation-0 mr-2" @click="doUiAction('startCreateItem', null)">新增</v-btn>
           <span class="body-2">共{{ tableData.length }}条记录</span>
         </v-col>
 
         <v-spacer></v-spacer>
 
-        <v-col cols="12" xs="8" sm="4" md="3" xl="3" class="pa-xs-0 pa-xs-2 col-sm-8-flex">
-          <v-text-field v-model="searchInput" label="表格过滤" class="cus-v-input" dense filled single-line></v-text-field>
+        <v-col cols="12" xs="8" sm="4" md="3" xl="3" class="px-0">
+          <v-text-field v-model="searchInput" color="success" prefix="表格过滤：" class="cus-v-input" dense filled single-line></v-text-field>
         </v-col>
 
       </v-row>
-      <v-data-table fixed-header
-                    :headers="tabPageHeaders"
+      <v-data-table  :headers="tabPageHeaders"
                     :items="tableData"
                     :search="searchInput"
                     :footer-props="{ itemsPerPageOptions: [20, 40, 60, 100, -1] }"
@@ -39,82 +47,82 @@
                     :loading="isTableLoading"
                     checkbox-color="success"
                     mobile-breakpoint="0"
-                    class="elevation-0 mt-0 mb-xs-4 flex-fill d-flex flex-column">
+                    :class="{'mx-2': isMobile}"
+                    class="elevation-0 mt-0 flex-fill d-flex flex-column">
         <template v-slot:item.pageType="{ item }">
           {{ getConstantCollectionItemText('pageType', item.pageType) }}
         </template>
         <template v-slot:item.action="{ item }">
-          <v-btn :small="!isMobile" class="mr-2 success" @click="doUiAction('startUpdateItem', {item})">
+          <v-btn small class="mr-2 success" @click="doUiAction('startUpdateItem', {item})">
             修改
           </v-btn>
-          <v-btn :small="!isMobile" class="mr-2 error" @click="doUiAction('deleteItem', {item})">
+          <v-btn small class="mr-2 error" @click="doUiAction('deleteItem', {item})">
             删除
           </v-btn>
         </template>
       </v-data-table>
     </v-card>
-  </v-container>
 
 <v-overlay app :value="isEditDrawerShow"></v-overlay>
   <!-- 编辑抽屉 -->
   <v-navigation-drawer v-model="isEditDrawerShow" fixed temporary right width="80%" hide-overlay class="elevation-24">
     <v-form v-model="isFormValid" ref="form" lazy-validation>
       <v-row class="pt-8">
-        <span class="title pa-6" :class="{'pl-12': !isMobile, 'pl-8': isMobile}">{{ currentClickButton.title }}信息</span>
+        <span class="title pa-6" :class="{'pl-12': !isMobile, 'pl-6': isMobile}">{{ currentClickButton.title }}信息</span>
         <v-spacer></v-spacer>
         <v-btn class="mt-6 elevation-0" :class="{'mr-16': !isMobile, 'mr-8': isMobile}" fab x-small @click="isEditDrawerShow = false">
           <v-icon dark>mdi-close</v-icon>
         </v-btn>
       </v-row>
-      <v-row :class="{'px-10': !isMobile, 'px-4': isMobile, 'pb-7': isMobile}" v-if="pageTab === 0">
-        <v-col cols="12" sm="12" md="4" :class="{'pa-0': isMobile, 'px-4': isMobile, 'pt-6': isMobile}">
-          <span style="color: #3F4254;" :style="{'line-height': isMobile ? '20px' : '42px', 'font-weight': isMobile ? 400 : 500}">pageId</span>
+      <v-row :class="{'px-10': !isMobile, 'px-3': isMobile, 'pb-7': isMobile}" v-if="pageTab === 0">
+        <v-col cols="12" sm="12" md="4" :class="{'pa-0': isMobile, 'px-3': isMobile, 'pt-6': isMobile}">
+          <span class="inputLabel">pageId</span>
           <v-text-field class="cus-v-input mr-2" dense filled single-line label="pageId" v-model="editItem.pageId"></v-text-field>
         </v-col>
-        <v-col cols="12" sm="12" md="4" :class="{'pa-0': isMobile, 'px-4': isMobile, 'pt-6': isMobile}">
-          <span style="color: #3F4254;" :style="{'line-height': isMobile ? '20px' : '42px', 'font-weight': isMobile ? 400 : 500}">actionId</span>
+        <v-col cols="12" sm="12" md="4" :class="{'pa-0': isMobile, 'px-3': isMobile, 'pt-6': isMobile}">
+          <span class="inputLabel">actionId</span>
           <v-text-field class="cus-v-input mr-2" dense filled single-line label="actionId" v-model="editItem.actionId"></v-text-field>
         </v-col>
-        <v-col cols="12" sm="12" md="4" :class="{'pa-0': isMobile, 'px-4': isMobile, 'pt-6': isMobile}">
-          <span style="color: #3F4254;" :style="{'line-height': isMobile ? '20px' : '42px', 'font-weight': isMobile ? 400 : 500}">resourceType</span>
+        <v-col cols="12" sm="12" md="4" :class="{'pa-0': isMobile, 'px-3': isMobile, 'pt-6': isMobile}">
+          <span class="inputLabel">resourceType</span>
           <v-select class="cus-v-input mr-2" dense filled single-line clearable label="resourceType" v-model="editItem.resourceType" :items="constantCollection.resourceType"></v-select>
         </v-col>
-        <v-col cols="12" sm="12" md="4" :class="{'pa-0': isMobile, 'px-4': isMobile, 'pt-6': isMobile}">
-          <span style="color: #3F4254;" :style="{'line-height': isMobile ? '20px' : '42px', 'font-weight': isMobile ? 400 : 500}">accessControlTable</span>
+        <v-col cols="12" sm="12" md="4" :class="{'pa-0': isMobile, 'px-3': isMobile, 'pt-6': isMobile}">
+          <span class="inputLabel">accessControlTable</span>
           <v-select class="cus-v-input mr-2" dense filled single-line clearable label="accessControlTable" v-model="editItem.accessControlTable" :items="constantCollection.accessControlTable"></v-select>
         </v-col>
-        <v-col cols="12" sm="12" md="4" :class="{'pa-0': isMobile, 'px-4': isMobile, 'pt-6': isMobile}">
-          <span style="color: #3F4254;" :style="{'line-height': isMobile ? '20px' : '42px', 'font-weight': isMobile ? 400 : 500}">resourceHook</span>
+        <v-col cols="12" sm="12" md="4" :class="{'pa-0': isMobile, 'px-3': isMobile, 'pt-6': isMobile}">
+          <span class="inputLabel">resourceHook</span>
           <v-text-field class="cus-v-input mr-2" dense filled single-line label="resourceHook" v-model="editItem.resourceHook"></v-text-field>
         </v-col>
-        <v-col cols="12" sm="12" md="4" :class="{'pa-0': isMobile, 'px-4': isMobile, 'pt-6': isMobile}">
-          <span style="color: #3F4254;" :style="{'line-height': isMobile ? '20px' : '42px', 'font-weight': isMobile ? 400 : 500}">appDataSchema</span>
+        <v-col cols="12" sm="12" md="4" :class="{'pa-0': isMobile, 'px-3': isMobile, 'pt-6': isMobile}">
+          <span class="inputLabel">appDataSchema</span>
           <v-text-field class="cus-v-input mr-2" dense filled single-line label="appDataSchema" v-model="editItem.appDataSchema"></v-text-field>
         </v-col>
-        <v-col cols="12" sm="12" md="12" xl="12" :class="{'pa-0': isMobile, 'px-4': isMobile, 'pt-6': isMobile}">
-          <span style="color: #3F4254;" :style="{'line-height': isMobile ? '20px' : '42px', 'font-weight': isMobile ? 400 : 500}">resourceData</span>
+        <v-col cols="12" sm="12" md="12" xl="12" :class="{'pa-0': isMobile, 'px-3': isMobile, 'pt-6': isMobile}">
+          <span class="inputLabel">resourceData</span>
           <v-textarea class="cus-v-input mr-2" dense filled single-line label="resourceData" v-model="editItem.resourceData"></v-textarea>
         </v-col>
-        <v-col cols="12" sm="12" md="12" xl="12" :class="{'pa-0': isMobile, 'px-4': isMobile, 'pt-6': isMobile}">
-          <span style="color: #3F4254;" :style="{'line-height': isMobile ? '20px' : '42px', 'font-weight': isMobile ? 400 : 500}">desc</span>
+        <v-col cols="12" sm="12" md="12" xl="12" :class="{'pa-0': isMobile, 'px-3': isMobile, 'pt-6': isMobile}">
+          <span class="inputLabel">desc</span>
           <v-textarea class="cus-v-input mr-2" dense filled single-line label="desc" v-model="editItem.desc"></v-textarea>
         </v-col>
       </v-row>
-      <v-row :class="{'px-10': !isMobile, 'px-4': isMobile, 'pb-7': isMobile}" v-if="pageTab === 1">
-        <v-col cols="12" sm="12" md="4" :class="{'pa-0': isMobile, 'px-4': isMobile, 'pt-6': isMobile}">
-          <span style="color: #3F4254;" :style="{'line-height': isMobile ? '20px' : '42px', 'font-weight': isMobile ? 400 : 500}">pageId</span>
+      <v-row :class="{'px-10': !isMobile, 'px-3': isMobile, 'pb-7': isMobile}" v-if="pageTab === 1">
+        <v-col cols="12" sm="12" md="4" :class="{'pa-0': isMobile, 'px-3': isMobile, 'pt-6': isMobile}">
+          <span class="inputLabel">pageId</span>
           <v-text-field class="cus-v-input mr-2" dense filled single-line label="pageId" v-model="editItem.pageId" :rules="requireRules"></v-text-field>
         </v-col>
-        <v-col cols="12" sm="12" md="4" :class="{'pa-0': isMobile, 'px-4': isMobile, 'pt-6': isMobile}">
-          <span style="color: #3F4254;" :style="{'line-height': isMobile ? '20px' : '42px', 'font-weight': isMobile ? 400 : 500}">pageName</span>
+        <v-col cols="12" sm="12" md="4" :class="{'pa-0': isMobile, 'px-3': isMobile, 'pt-6': isMobile}">
+          <span class="inputLabel">pageName</span>
           <v-text-field class="cus-v-input mr-2" dense filled single-line label="pageName" v-model="editItem.pageName"></v-text-field>
         </v-col>
-        <v-col cols="12" sm="12" md="4" :class="{'pa-0': isMobile, 'px-4': isMobile, 'pt-6': isMobile}">
-          <span style="color: #3F4254;" :style="{'line-height': isMobile ? '20px' : '42px', 'font-weight': isMobile ? 400 : 500}">pageType</span>
+        <v-col cols="12" sm="12" md="4" :class="{'pa-0': isMobile, 'px-3': isMobile, 'pt-6': isMobile}">
+          <span class="inputLabel">pageType</span>
           <v-select class="cus-v-input mr-2" dense filled single-line clearable label="pageType" v-model="editItem.pageType" :items="constantCollection.pageType"></v-select>
         </v-col>
-        <v-col cols="12" sm="12" md="4" :class="{'pa-0': isMobile, 'px-4': isMobile, 'pt-6': isMobile}">
-          <span style="color: #3F4254;" :style="{'line-height': isMobile ? '20px' : '42px', 'font-weight': isMobile ? 400 : 500}">sort</span>
+        <v-col cols="12" sm="12" md="4" :class="{'pa-0': isMobile, 'px-3': isMobile, 'pt-6': isMobile}">
+          <span class="inputLabel">sort</span>
           <v-text-field class="cus-v-input mr-2" dense filled single-line label="sort" v-model="editItem.sort"></v-text-field>
         </v-col>
       </v-row>

@@ -5,24 +5,24 @@
 <jh-layout-v3>
 
 <!-- 页面主要内容 -->
-<v-container class="fullScreen d-flex flex-column pa-xs-0 pa-0">
+<v-container class="fullScreen d-flex flex-column pa-0">
 
-  <v-card>
-    <v-row class="ma-0 pa-xs-4 align-center flex-none pt-0 " :class="{'pa-4': !isMobile, 'pb-0': !isMobile, 'pa-2': isMobile}">
+  <v-card :class="{'px-2': isMobile}">
+    <v-row class="ma-0 align-center flex-none pt-0 " :class="{'pa-4': !isMobile, 'pb-0': !isMobile, 'pa-2': isMobile}">
 
       <v-spacer></v-spacer>
 
-      <v-col cols="12" xs="8" sm="3" md="2" xl="2" class="pa-xs-0 pa-xs-2 col-sm-8-flex pl-0">
-        <v-select class="cus-v-input mr-2" v-model="currentTable" :items="tableList"
+      <v-col cols="12" xs="12" sm="3" md="2" xl="2" class="pl-0" :class="{'px-0': isMobile, 'pl-0': !isMobile}">
+        <v-select class="cus-v-input" :clas="{'mr-2': !isMobile, 'pr-0': isMobile}" v-model="currentTable" :items="tableList"
                   prefix="数据表:" dense dense filled single-line></v-select>
       </v-col>
-      <v-col cols="12" xs="8" sm="3" md="2" xl="2" class="pa-xs-0 pa-xs-2 col-sm-8-flex pl-0">
+      <v-col cols="12" xs="6" sm="3" md="2" xl="2" class="pl-0" :class="{'pr-0': isMobile}">
         <v-select class="cus-v-input mr-2" v-model="currentHistoryDataType" :items="historyDataTypeList"
                   prefix="数据类型:" dense dense filled single-line></v-select>
       </v-col>
 
-      <v-col cols="12" xs="8" sm="4" md="3" xl="3" class="pa-xs-0 pa-xs-2 col-sm-8-flex pr-0">
-        <v-text-field v-model="searchInput" label="表格过滤" class="cus-v-input" dense filled single-line></v-text-field>
+      <v-col cols="12" xs="6" sm="4" md="3" xl="3" class="pr-0">
+        <v-text-field v-model="searchInput" color="success" prefix="表格过滤：" class="cus-v-input" dense filled single-line></v-text-field>
       </v-col>
 
     </v-row>
@@ -35,7 +35,7 @@
                   :loading="isTableLoading"
                   checkbox-color="success"
                   mobile-breakpoint="0"
-                  class="elevation-0 mt-0 mb-xs-4 flex-fill d-flex flex-column">
+                  class="elevation-0 mt-0 flex-fill d-flex flex-column">
       <template v-slot:item.operationAt="{ item }">
         {{ item.operationAt && dayjs(item.operationAt).format('YYYY-MM-DD HH:mm:ss') }}
       </template>
@@ -74,7 +74,7 @@
           :footer-props="{ itemsPerPageOptions: [20, 40, 60, 100, -1] }"
           :items-per-page="-1"
           mobile-breakpoint="0"
-          class="elevation-0 pa-8 mb-xs-4 flex-fill d-flex flex-column show-select"
+          class="elevation-0 pa-8 flex-fill d-flex flex-column show-select"
       >
         <template v-slot:item.operationAt="{ item }">
           {{ item.operationAt && dayjs(item.operationAt).format('YYYY-MM-DD HH:mm:ss') }}
