@@ -56,7 +56,7 @@
       </v-data-table>
     </v-card>
   <!-- 编辑抽屉 -->
-  <v-navigation-drawer v-model="isEditDrawerShow" fixed temporary right width="80%"
+  <v-navigation-drawer v-model="isEditDrawerShow" :permanent="isEditDrawerShow" fixed temporary right width="80%"
                        class="elevation-24">
     <v-form v-model="isFormValid" v-if="isEditDrawerShow" ref="form" lazy-validation>
       <v-row class="pt-8">

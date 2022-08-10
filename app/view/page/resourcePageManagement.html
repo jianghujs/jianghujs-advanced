@@ -65,7 +65,7 @@
 
 <v-overlay app :value="isEditDrawerShow"></v-overlay>
   <!-- 编辑抽屉 -->
-  <v-navigation-drawer v-model="isEditDrawerShow" fixed temporary right width="80%" hide-overlay class="elevation-24">
+  <v-navigation-drawer v-model="isEditDrawerShow" :permanent="isEditDrawerShow" fixed temporary right width="80%" hide-overlay class="elevation-24">
     <v-form v-model="isFormValid" ref="form" lazy-validation>
       <v-row class="pt-8">
         <span class="title pa-6" :class="{'pl-12': !isMobile, 'pl-6': isMobile}">{{ currentClickButton.title }}信息</span>
