@@ -13,7 +13,7 @@
    port: 3306,
    user: 'root',
    password: '123456',
-   database: 'jianghu_demo_advanced'
+   database: 'jianghujs-advanced'
    ```
 4. 启动 npm run dev
 
@@ -21,8 +21,8 @@
 
 ```sql
 # 数据库初始化
-create database `jianghujs_demo_basic` default character set utf8mb4 collate utf8mb4_bin;
-use jianghujs_demo_basic;
+create database `jianghujs-advanced` default character set utf8mb4 collate utf8mb4_bin;
+use jianghujs-advanced;
 # 运行 sql/init.sql 文件
 ```
 
