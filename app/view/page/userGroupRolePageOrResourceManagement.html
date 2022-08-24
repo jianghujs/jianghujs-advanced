@@ -29,7 +29,7 @@
   <v-row class="ma-0 align-center flex-none pt-0 " :class="{'pa-4': !isMobile, 'pb-0': !isMobile, 'pa-2': isMobile}">
 
     <v-col cols="12" xs="12" sm="4" md="4" xl="4" class="pl-0">
-      <v-btn color="success" dark class="elevation-0 mr-2" @click="doUiAction('startCreateItem', null)">新增</v-btn>
+      <v-btn color="success" dark class="elevation-0 mr-2" @click="doAction('startCreateItem', null)">新增</v-btn>
       <span class="body-2">共{{ tableData.length }}条记录</span>
     </v-col>
 
@@ -55,10 +55,10 @@
       {{ getConstantCollectionItemText('allowOrDeny', item.allowOrDeny) }}
     </template>
     <template v-slot:item.action="{ item }">
-      <v-btn small class="mr-2 success" @click="doUiAction('startUpdateItem', {item})">
+      <v-btn small class="mr-2 success" @click="doAction('startUpdateItem', {item})">
         修改
       </v-btn>
-      <v-btn small class="mr-2 error" @click="doUiAction('deleteItem', {item})">
+      <v-btn small class="mr-2 error" @click="doAction('deleteItem', {item})">
         删除
       </v-btn>
     </template>
@@ -67,7 +67,7 @@
 
 <v-overlay app :value="isEditDrawerShow"></v-overlay>
 <!-- 编辑抽屉 -->
-<v-navigation-drawer v-model="isEditDrawerShow" permanent="isEditDrawerShow" fixed temporary right width="80%" hide-overlay
+<v-navigation-drawer v-model="isEditDrawerShow" fixed temporary right width="80%" hide-overlay
                      class="elevation-24">
   <v-form v-model="isFormValid" ref="form" lazy-validation>
     <v-row class="pt-8">
@@ -116,7 +116,7 @@
     </v-row>
 
     <v-row class="justify-end mx-0 mt-8" :class="{'px-10': !isMobile, 'px-4': isMobile, 'mb-8': isMobile}">
-      <v-btn color="success" @click="doUiAction(dialogSaveInfoAction)">保存</v-btn>
+      <v-btn color="success" @click="doAction(dialogSaveInfoAction)">保存</v-btn>
       <v-btn class="elevation-0 mr-2 ml-2" @click="isEditDrawerShow = false">取消</v-btn>
     </v-row>
   </v-form>
@@ -202,73 +202,52 @@ new Vue({
   watch: {
     pageTab() {
       this.tableDataFromBackend = [];
-      this.refreshTableData();
+      this.doAction('refreshTableData');
     }
   },
   async created() {
   },
   mounted() {
-    this.doUiAction('refreshTableData');
+    this.doAction('refreshTableData');
   },
   methods: {
-    async initOptions() {
-      this.selectGroup();
-      this.selectRole();
-      this.selectResource();
-      this.selectPage();
+    async doAction(actionId, actionData) {
+      switch (actionId) {
+        case 'refreshTableData':
+          await this.refreshTableData(actionData);
+          break;
+        case 'startCreateItem':
+          await this.clearItemData(actionData);
+          await this.openCreateItemDialog(actionData);
+          break;
+        case 'createItem':
+          await this.confirmCreateItemDialog(actionData);
+          await this.doCreateItem(actionData);
+          await this.refreshTableData(actionData);
+          await this.closeDrawerShow(actionData);
+          break;
+        case 'startUpdateItem':
+          await this.prepareItemData(actionData);
+          await this.openUpdateItemDialog(actionData);
+          break;
+        case 'updateItem':
+          await this.confirmUpdateItemDialog(actionData);
+          await this.doUpdateItem(actionData);
+          await this.refreshTableData(actionData);
+          await this.closeDrawerShow(actionData);
+          break;
+        case 'deleteItem':
+          await this.confirmDeleteItemDialog(actionData);
+          await this.prepareItemData(actionData);
+          await this.doDeleteItem(actionData);
+          await this.refreshTableData(actionData);
+          break;
+        default:
+          console.error("[doAction] actionId not find", { actionId });
+          break;
+      }
     },
-    async selectGroup() {
-      const result = await window.jianghuAxios({
-        data: {
-          appData: {
-            pageId: 'userGroupRolePageOrResourceManagement',
-            actionId: 'selectGroup'
-          }
-        }
-      });
-      this.constantCollection.group = [...this.constantCollection.group, ...result.data.appData.resultData.rows.map((group) => {
-        return {value: group.groupId, text: group.groupName}
-      })]
-    },
-    async selectRole() {
-      const result = await window.jianghuAxios({
-        data: {
-          appData: {
-            pageId: 'userGroupRolePageOrResourceManagement',
-            actionId: 'selectRole'
-          }
-        }
-      });
-      this.constantCollection.role = [...this.constantCollection.role, ...result.data.appData.resultData.rows.map((role) => {
-        return {value: role.roleId, text: role.roleName}
-      })]
-    },
-    async selectResource() {
-      const result = await window.jianghuAxios({
-        data: {
-          appData: {
-            pageId: 'userGroupRolePageOrResourceManagement',
-            actionId: `selectResourceList`
-          }
-        }
-      });
-      this.constantCollection.resource = [...this.constantCollection.resource, ...result.data.appData.resultData.rows.map((resource) => {
-        return {value: `${resource.pageId}.${resource.actionId}`, text: `${resource.pageId}.${resource.actionId}`}
-      })]
-    },
-    async selectPage() {
-      const result = await window.jianghuAxios({
-        data: {
-          appData: {
-            pageId: 'userGroupRolePageOrResourceManagement',
-            actionId: `selectPageList`
-          }
-        }
-      });
-      this.constantCollection.page = [...this.constantCollection.page, ...result.data.appData.resultData.rows.map((page) => {
-        return {value: page.pageId, text: page.pageName}
-      })]
-    },
+
     /**
      * 获取表格数据
      */
@@ -301,7 +280,9 @@ new Vue({
 
     // createItem
     async confirmCreateItemDialog() {
-      return window.confirmDialog({title: '新增', content: '确定新增吗？'})
+      if (await window.confirmDialog({title: "新增", content: "确定新增吗？"}) === false) {
+          throw new Error("[confirmCreateFormDialog] 否");
+      }
     },
 
     /**
@@ -339,7 +320,9 @@ new Vue({
 
     // updateItem
     async confirmUpdateItemDialog() {
-      return window.confirmDialog({title: '修改', content: '确定修改吗？'});
+      if (await window.confirmDialog({title: "修改", content: "确定修改吗？"}) === false) {
+          throw new Error("[confirmUpdateItemDialog] 否");
+      }
     },
 
     /**
@@ -364,7 +347,9 @@ new Vue({
 
     // deleteItem
     async confirmDeleteItemDialog() {
-      return window.confirmDialog({title: '删除', content: '确定删除吗？'});
+      if (await window.confirmDialog({title: "删除", content: "确定删除吗？"}) === false) {
+          throw new Error("[confirmDeleteItemDialog] 否");
+      }
     },
 
     /**

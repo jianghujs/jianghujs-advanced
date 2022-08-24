@@ -40,7 +40,7 @@
         {{ item.operationAt && dayjs(item.operationAt).format('YYYY-MM-DD HH:mm:ss') }}
       </template>
       <template v-slot:item.option="{ item }">
-        <v-btn small class="mr-2" color="success" :disabled="item.count === 0" @click="doUiAction('viewRecordHistory', {item})">
+        <v-btn small class="mr-2" color="success" :disabled="item.count === 0" @click="doAction('viewRecordHistory', {item})">
           <v-badge color="red" :content="item.count" :value="item.count">
             查看数据版本
           </v-badge>
@@ -64,7 +64,14 @@
     class="elevation-24"
 >
   <v-container class="navDrawerContainer">
-    <v-row class="pa-2 py-0">
+    <v-row class="pt-8">
+      <span class="title pa-6" :class="{'pl-12': !isMobile, 'pl-6': isMobile}">数据版本</span>
+      <v-spacer></v-spacer>
+      <v-btn class="mt-6 elevation-0" :class="{'mr-16': !isMobile, 'mr-8': isMobile}" fab x-small @click="isEditDrawerShow = false">
+        <v-icon dark>mdi-close</v-icon>
+      </v-btn>
+    </v-row>
+    <v-row :class="{'px-5': !isMobile, 'px-3': isMobile, 'pb-7': isMobile}">
       <v-data-table
           fixed-header
           checkbox-color="success"
@@ -81,7 +88,7 @@
           {{ item.operationAt && dayjs(item.operationAt).format('YYYY-MM-DD HH:mm:ss') }}
         </template>
         <template v-slot:item.option="{ item }">
-          <v-btn small class="mr-2" color="error" @click="doUiAction('restoreRecordByRecordHistory', {item})">还原数据</v-btn>
+          <v-btn small class="mr-2" color="error" @click="doAction('restoreRecordByRecordHistory', {item})">还原数据</v-btn>
         </template>
       </v-data-table>
     </v-row>
@@ -145,19 +152,42 @@ new Vue({
   },
   watch: {
     currentTable() {
-      this.doUiAction('refreshTableData')
+      this.doAction('refreshTableData')
     },
     currentHistoryDataType() {
-      this.doUiAction('refreshTableData')
+      this.doAction('refreshTableData')
     }
   },
   async created() {
     if (this.currentTable) {
-      this.doUiAction('refreshTableData')
+      this.doAction('refreshTableData')
     }
   },
   mounted() {},
   methods: {
+    async doAction(actionId, actionData) {
+      switch (actionId) {
+        case 'refreshTableData':
+          await this.openTableLoading(actionData);
+          await this.refreshTableData(actionData);
+          await this.computeHeader(actionData);
+          await this.closeTableLoading(actionData);
+          break;
+        case 'viewRecordHistory':
+          await this.openDrawer(actionData);
+          await this.doViewRecordHistory(actionData);
+          break;
+        case 'restoreRecordByRecordHistory':
+          await this.doRestoreRecordByRecordHistory(actionData);
+          await this.doViewRecordHistory(actionData);
+          await this.refreshTableData(actionData);
+          break;
+        default:
+          console.error("[doAction] actionId not find", { actionId });
+          break;
+      }
+    },
+
     async openTableLoading() {
       this.isTableLoading = true;
     },
@@ -216,11 +246,14 @@ new Vue({
       }
     },
 
+    async openDrawer() {
+        this.isEditDrawerShow = true;
+    },
+
     // viewRecordHistory
     async doViewRecordHistory({item}) {
       const { id } = item;
       this.drawerTableData = [];
-      this.isEditDrawerShow = true;
       this.isDrawerTableLoading = true;
       const result = await window.jianghuAxios({
         data: {

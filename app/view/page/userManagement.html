@@ -9,7 +9,7 @@
       <v-row class="ma-0 align-center flex-none pt-0 " :class="{'pa-4': !isMobile, 'pb-0': !isMobile, 'pa-2': isMobile}">
 
         <v-col cols="12" xs="12" sm="4" md="4" xl="4" class="pl-0">
-          <v-btn color="success" dark class="elevation-0 mr-2" @click="doUiAction('startCreateItem', null)">新增</v-btn>
+          <v-btn color="success" dark class="elevation-0 mr-2" @click="doAction('startCreateItem', null)">新增</v-btn>
           <span class="body-2">共{{ tableData.length }}条记录</span>
         </v-col>
 
@@ -38,18 +38,18 @@
           {{ getConstantCollectionItemText('userStatus', item.userStatus) }}
         </template>
         <template v-slot:item.action="{ item }">
-          <v-btn small class="mr-2" color="success" @click="doUiAction('startUpdateItem', {item})">修改</v-btn>
+          <v-btn small class="mr-2" color="success" @click="doAction('startUpdateItem', {item})">修改</v-btn>
           <v-btn small class="mr-2" color="primary"
                  v-if="item.userStatus !== 'active'"
-                 @click="doUiAction('activeUserStatus', {item})">
+                 @click="doAction('activeUserStatus', {item})">
             激活用户
           </v-btn>
           <v-btn small class="mr-2" color="error"
                  v-if="item.userStatus === 'active'"
-                 @click="doUiAction('bannedUserStatus', {item})">
+                 @click="doAction('bannedUserStatus', {item})">
             禁用用户
           </v-btn>
-          <v-btn small class="mr-2" color="error" v-if="item.userStatus === 'active'" @click="doUiAction('startResetPassword', {item})">
+          <v-btn small class="mr-2" color="error" v-if="item.userStatus === 'active'" @click="doAction('startResetPassword', {item})">
             修改密码
           </v-btn>
         </template>
@@ -95,7 +95,7 @@
         </v-col>
       </v-row>
       <v-row class="justify-end mx-0 mt-8" :class="{'px-10': !isMobile, 'px-4': isMobile, 'mb-8': isMobile}">
-        <v-btn color="success" @click="doUiAction(dialogSaveInfoAction)" >保存</v-btn>
+        <v-btn color="success" @click="doAction(dialogSaveInfoAction)" >保存</v-btn>
         <v-btn class="elevation-0 mr-2 ml-2" @click="isEditDrawerShow = false" >取消</v-btn>
       </v-row>
     </v-form>
@@ -123,7 +123,6 @@
         userType: [{value: 'common', text: '管理员'}, {value: 'staff', text: '职工'}, {value: 'student', text: '学员'}],
       },
       isEditDrawerShow: false,
-      isEditDrawerPermanent: false,
       searchInput: null,
       isTableLoading: true,
       tableDataFromBackend: [],
@@ -155,9 +154,63 @@
     async created() {
     },
     mounted() {
-      this.doUiAction('refreshTableData');
+      this.doAction('refreshTableData');
     },
     methods: {
+      async doAction(actionId, actionData) {
+        switch (actionId) {
+          case 'refreshTableData':
+            await this.refreshTableData(actionData);
+            break;
+          case 'startCreateItem':
+            await this.clearItemData(actionData);
+            await this.openCreateItemDialog(actionData);
+            break;
+          case 'createItem':
+            await this.prepareValidate(actionData);
+            await this.confirmCreateItemDialog(actionData);
+            await this.doCreateItem(actionData);
+            await this.refreshTableData(actionData);
+            await this.closeDrawerShow(actionData);
+            break;
+          case 'startUpdateItem':
+            await this.prepareItemData(actionData);
+            await this.openUpdateItemDialog(actionData);
+            break;
+          case 'updateItem':
+            await this.prepareValidate(actionData);
+            await this.confirmUpdateItemDialog(actionData);
+            await this.doUpdateItem(actionData);
+            await this.refreshTableData(actionData);
+            await this.closeDrawerShow(actionData);
+            break;
+          case 'activeUserStatus':
+            await this.confirmActiveUserStatusDialog(actionData);
+            await this.prepareItemData(actionData);
+            await this.doActiveUserStatus(actionData);
+            await this.refreshTableData(actionData);
+            break;
+          case 'startResetPassword':
+            await this.prepareItemData(actionData);
+            await this.openResetPasswordDialog(actionData);
+            break;
+          case 'resetPassword':
+            await this.confirmResetPasswordDialog(actionData);
+            await this.doResetUserPassword(actionData);
+            await this.refreshTableData(actionData);
+            await this.closeDrawerShow(actionData);
+            break;
+          case 'bannedUserStatus':
+            await this.confirmBannedUserStatusDialog(actionData);
+            await this.prepareItemData(actionData);
+            await this.doBannedUserStatus(actionData);
+            await this.refreshTableData(actionData);
+            break;
+          default:
+            console.error("[doAction] actionId not find", { actionId });
+            break;
+        }
+      },
       /**
        * 获取表格数据
        */
@@ -191,12 +244,16 @@
 
       // createItem
       async prepareValidate() {
-        if (!this.$refs.form.validate()) return false;
+        if (await this.$refs.form.validate() === false) {
+          throw new Error("[prepareValidate] false");
+        }
       },
 
       // createItem
       async confirmCreateItemDialog() {
-        return window.confirmDialog({title: '新增', content: '确定新增吗？'})
+        if (await window.confirmDialog({title: "新增", content: "确定新增吗？"}) === false) {
+          throw new Error("[confirmCreateFormDialog] 否");
+        }
       },
 
       /**
@@ -234,7 +291,9 @@
 
       // updateItem
       async confirmUpdateItemDialog() {
-        return window.confirmDialog({title: '修改', content: '确定修改吗？'});
+        if (await window.confirmDialog({title: "修改", content: "确定修改吗？"}) === false) {
+          throw new Error("[confirmUpdateItemDialog] 否");
+        }
       },
 
       /**
@@ -257,7 +316,9 @@
       },
 
       async confirmActiveUserStatusDialog() {
-        return window.confirmDialog({ title: '激活', content: `确定激活吗？`});
+        if (await window.confirmDialog({title: "激活", content: "确定激活吗？"}) === false) {
+          throw new Error("[confirmActiveUserStatusDialog] 否");
+        }
       },
 
       /**
@@ -280,7 +341,9 @@
       },
 
       async confirmBannedUserStatusDialog() {
-        return window.confirmDialog({ title: '禁用', content: `确定禁用吗？`});
+        if (await window.confirmDialog({title: "禁用", content: "确定禁用吗？"}) === false) {
+          throw new Error("[confirmBannedUserStatusDialog] 否");
+        }
       },
 
       /**
@@ -311,12 +374,12 @@
 
       // updateItem
       async confirmResetPasswordDialog() {
-        this.isEditDrawerPermanent = true;
-        return window.confirmDialog({title: '修改用户密码', content: '确定修改用户密码吗？'});
+        if (await window.confirmDialog({title: "修改用户密码", content: "确定修改用户密码吗？"}) === false) {
+          throw new Error("[confirmResetPasswordDialog] 否");
+        }
       },
 
       async doResetUserPassword() {
-        this.isEditDrawerPermanent = false;
         const {userId, clearTextPassword} = this.editItem;
         await window.vtoast.loading("修改密码");
         await window.jianghuAxios({
@@ -330,6 +393,7 @@
         });
         window.vtoast.success("修改密码成功");
       },
+
       getConstantCollectionItemText(key, _value) {
         const constantCollectionItemFind = this.constantCollection[key].find(({value}) => value === _value);
         if(constantCollectionItemFind) {
