@@ -377,6 +377,7 @@
             await this.openCreateItemDialog(actionData);
             break;
           case 'createItem':
+            await this.prepareValidate(actionData);
             await this.confirmCreateItemDialog(actionData);
             await this.doCreateItem(actionData);
             await this.refreshTableData(actionData);
@@ -387,6 +388,7 @@
             await this.openUpdateItemDialog(actionData);
             break;
           case 'updateItem':
+            await this.prepareValidate(actionData);
             await this.confirmUpdateItemDialog(actionData);
             await this.doUpdateItem(actionData);
             await this.refreshTableData(actionData);
