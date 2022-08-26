@@ -29,7 +29,7 @@
         <v-tab class="pa-0">组织</v-tab>
         <v-tab class="pa-0">角色</v-tab>
       </v-tabs>
-      <v-btn depressed  block style="max-width: 180px; display: block; min-width: calc(100% - 24px)!important;" @click="doAction('startCreateLeftItem', null)" color="success ma-3 mb-0">
+      <v-btn depressed  block style="max-width: 180px; display: block; min-width: calc(100% - 24px)!important;" @click="doUiAction('startCreateLeftItem', null)" color="success ma-3 mb-0">
         添加新{{tabItemTitle}}
       </v-btn>
       <v-col>
@@ -65,7 +65,7 @@
           <v-row class="ma-0 align-center flex-none pt-0 " :class="{'pb-0': !isMobile, 'pa-2': isMobile, 'pl-0': !isMobile, 'pr-0': !isMobile}">
 
             <v-col cols="12" xs="4" sm="4" md="4" xl="4" class="pl-0 d-flex align-center">
-              <v-btn color="success" dark class="elevation-0 mr-4" @click="doAction('startCreateItem', null)">新增</v-btn>
+              <v-btn color="success" dark class="elevation-0 mr-4" @click="doUiAction('startCreateItem', null)">新增</v-btn>
               <div style="border-radius: 4px; padding-top: 1px" class="pr-2 mr-4">
                 <v-switch class="d-inline-block ma-0 pa-0"
                           v-model="showAllData"
@@ -73,12 +73,12 @@
                           color="success"
                           inset
                           style="white-space: nowrap"
-                          @change="doAction('refreshTableData')"
+                          @change="doUiAction('refreshTableData')"
                           hide-details
                 ></v-switch>
               </div>
               <v-divider vertical></v-divider>
-              <span class="body-2 ml-5" style="white-space: nowrap">共{{ tableData.length }}条记录</span>
+              <span class="body-2 ml-5" style="white-space: nowrap">共{{ tableDataFromBackend.length }}条记录</span>
             </v-col>
 
             <v-spacer></v-spacer>
@@ -90,7 +90,7 @@
           </v-row>
           <v-data-table fixed-header
                         :headers="headers"
-                        :items="tableData"
+                        :items="tableDataFromBackend"
                         :search="searchInput"
                         :footer-props="{ itemsPerPageOptions: [20, 40, 60, 100, -1] }"
                         :items-per-page="20"
@@ -103,10 +103,10 @@
               {{ (constantCollection.userType.find(({value}) => value === item.roleId) || constantCollection.role.find(({value}) => value === item.roleId) || {}).text }}
             </template>
             <template v-slot:item.action="{ item }">
-              <v-btn small class="mr-2 success" @click="doAction('startUpdateItem', {item})">
+              <v-btn small class="mr-2 success" @click="doUiAction('startUpdateItem', {item})">
                 修改
               </v-btn>
-              <v-btn small class="mr-2 error" @click="doAction('deleteItem', {item})">
+              <v-btn small class="mr-2 error" @click="doUiAction('deleteItem', {item})">
                 删除
               </v-btn>
             </template>
@@ -126,8 +126,8 @@
             </v-list-item>
             <v-row class="pa-5">
               <v-spacer></v-spacer>
-              <v-btn color="error" @click="doAction('deleteLeftItem')" class="mr-4">删除</v-btn>
-              <v-btn color="success" @click="doAction('updateLeftItem')">修改</v-btn>
+              <v-btn color="error" @click="doUiAction('deleteLeftItem')" class="mr-4">删除</v-btn>
+              <v-btn color="success" @click="doUiAction('updateLeftItem')">修改</v-btn>
             </v-row>
           </v-form>
         </v-col>
@@ -162,7 +162,7 @@
       </v-row>
 
       <v-row class="justify-end mx-0 mt-8" :class="{'px-10': !isMobile, 'px-4': isMobile, 'mb-8': isMobile}">
-        <v-btn color="success" @click="doAction(dialogSaveInfoAction)" >保存</v-btn>
+        <v-btn color="success" @click="doUiAction(dialogSaveInfoAction)" >保存</v-btn>
         <v-btn class="elevation-0 mr-2 ml-2" @click="isEditDrawerShow = false" >取消</v-btn>
       </v-row>
     </v-form>
@@ -242,7 +242,7 @@
 
       <v-card-actions class="py-4">
         <v-spacer></v-spacer>
-        <v-btn color="success"  @click="doAction('createLeftItem')"> 保存</v-btn>
+        <v-btn color="success"  @click="doUiAction('createLeftItem')"> 保存</v-btn>
         <v-btn class="elevation-0 mr-2 ml-2" @click="addItemDialog = false" >取消</v-btn>
       </v-card-actions>
     </v-card>
@@ -260,6 +260,7 @@
     vuetify: new Vuetify(),
     mixins: [window.jianghuUiActionMixins],
     data: {
+      isMobile: window.innerWidth < 600,
       // 表格相关数据
       isFormValid: true,
       isFormValidLeft: true,
@@ -315,59 +316,39 @@
         {text: "角色描述", value: "roleDesc", require: false},
       ],
       currentClickButton: {title: '新增', action: 'add'},
-      dialogSaveInfoAction: ''
-    },
-    computed: {
-      isMobile() {
-        return window.innerWidth < 600;
-      },
-      tableData() {
-        return this.tableDataFromBackend;
-      },
-      tabData() {
-        // _.toPairs对象转成了数组，因此可以索引获取
-        const temp = _.toPairs(this.constantCollection);
-        const tempTabList = temp[this.pageTab][1];
-        if(this.tabsSearchKeyword) {
-          const searchKey = [['userId', 'username'], ['groupId', 'groupName'], ['roleId', 'roleName']][this.pageTab];
-          return tempTabList.filter((item) => item.data[searchKey[0]].includes(this.tabsSearchKeyword) || item.data[searchKey[1]].includes(this.tabsSearchKeyword));
-        }
-        return tempTabList;
-
-      },
-      tabPageHeaders() {
-        if (this.pageTab === 0) {
-          return this.headers;
-        }
-        if (this.pageTab === 1) {
-          return this.pageHeaders;
-        }
-      },
-      tabItemTitle() {
-        const names = ['用户', '组织', '角色'];
-        return names[this.pageTab];
-      },
-      tabItemKeys() {
-        return [this.userKeys, this.groupKeys, this.roleKeys][this.pageTab];
-      }
+      dialogSaveInfoAction: '',
+      tabItemTitle: '用户',
+      tabItemKeys: [],
+      tabData: []
     },
     watch: {
       async pageTab() {
-        this.doAction('refreshTableData');
+        this.tabItemTitle = ['用户', '组织', '角色'][this.pageTab];
+        this.tabItemKeys = [this.userKeys, this.groupKeys, this.roleKeys][this.pageTab];
+        this.buildTabData();
+        this.tableDataFromBackend = [];
+        await this.doUiAction('refreshTableData');
+      },
+      constantCollection: {
+        deep: true,
+        handler(value) {
+          this.buildTabData();
+        }
       },
       selectedItem(v, ov) {
         if (v !== ov) {
-          this.doAction('refreshTableData');
+          this.doUiAction('refreshTableData');
         }
       }
     },
     async created() {
+      this.tabItemKeys = this.userKeys;
     },
     mounted() {
-      this.doAction('initOptions');
+      this.doUiAction('initOptions');
     },
     methods: {
-      async doAction(actionId, actionData) {
+      async doUiAction(actionId, actionData) {
         switch (actionId) {
           case 'refreshTableData':
             await this.refreshTableData(actionData);
@@ -426,9 +407,20 @@
             await this.initOptions(actionData);
             break;
           default:
-            console.error("[doAction] actionId not find", { actionId });
+            console.error("[doUiAction] actionId not find", { actionId });
             break;
         }
+      },
+      buildTabData() {
+          // _.toPairs对象转成了数组，因此可以索引获取
+          const temp = _.toPairs(this.constantCollection);
+          const tempTabList = temp[this.pageTab][1];
+          if(this.tabsSearchKeyword) {
+            const searchKey = [['userId', 'username'], ['groupId', 'groupName'], ['roleId', 'roleName']][this.pageTab];
+            this.tabData = tempTabList.filter((item) => item.data[searchKey[0]].includes(this.tabsSearchKeyword) || item.data[searchKey[1]].includes(this.tabsSearchKeyword));
+          } else {
+            this.tabData = tempTabList;
+          }
       },
       initOptions() {
         this.selectGroup();

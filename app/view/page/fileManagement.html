@@ -9,9 +9,9 @@
       <v-row class="ma-0 align-center flex-none pt-0 " :class="{'pa-4': !isMobile, 'pb-0': !isMobile, 'pa-2': isMobile}">
 
         <v-col cols="12" xs="12" sm="4" md="4" xl="4" class="pl-0">
-          <v-btn color="success" dark class="elevation-0 mr-2" @click="doAction('startCreateItem', null)">新增
+          <v-btn color="success" dark class="elevation-0 mr-2" @click="doUiAction('startCreateItem', null)">新增
           </v-btn>
-          <span class="body-2">共{{ tableData.length }}条记录</span>
+          <span class="body-2">共{{ tableDataFromBackend.length }}条记录</span>
         </v-col>
 
         <v-spacer></v-spacer>
@@ -23,7 +23,7 @@
       </v-row>
       <v-data-table fixed-header
                     :headers="headers"
-                    :items="tableData"
+                    :items="tableDataFromBackend"
                     :search="searchInput"
                     :footer-props="{ itemsPerPageOptions: [20, 40, 60, 100, -1] }"
                     :items-per-page="20"
@@ -33,13 +33,13 @@
                     :class="{'mx-2': isMobile}"
                     class="elevation-0 mt-0 flex-fill d-flex flex-column">
         <template v-slot:item.downloadPath="{ item }">
-          <a href="javascript:;" @click="doAction('downloadFileByStream', {item})">{{item.downloadPath}}</a>
+          <a href="javascript:;" @click="doUiAction('downloadFileByStream', {item})">{{item.downloadPath}}</a>
         </template>
         <template v-slot:item.action="{ item }">
-          <v-btn small class="mr-2 success" @click="doAction('startUpdateItem', {item})">
+          <v-btn small class="mr-2 success" @click="doUiAction('startUpdateItem', {item})">
             修改
           </v-btn>
-          <v-btn small class="mr-2 error" @click="doAction('deleteItem', {item})">
+          <v-btn small class="mr-2 error" @click="doUiAction('deleteItem', {item})">
             删除
           </v-btn>
         </template>
@@ -100,7 +100,7 @@
         </template>
       </v-row>
       <v-row class="justify-end mx-0 mt-8" :class="{'px-10': !isMobile, 'px-3': isMobile, 'mb-8': isMobile}">
-        <v-btn color="success" @click="doAction(dialogSaveInfoAction)">保存</v-btn>
+        <v-btn color="success" @click="doUiAction(dialogSaveInfoAction)">保存</v-btn>
         <v-btn class="elevation-0 mr-2 ml-2" @click="isEditDrawerShow = false">取消</v-btn>
       </v-row>
     </v-form>
@@ -117,8 +117,8 @@
     el: '#app',
     template: '#app-template',
     vuetify: new Vuetify(),
-    mixins: [window.jianghuUiActionMixins],
     data: {
+      isMobile: window.innerWidth < 600,
       // 表格相关数据
       isFormValid: true,
       requireRules: [ v => !!v || 'This is required' ],
@@ -145,22 +145,14 @@
       downloadPrefix: `${window.location.origin}/<$ ctx.app.config.appId $>/upload`,
       dialogSaveInfoAction: ''
     },
-    computed: {
-      isMobile() {
-        return window.innerWidth < 600;
-      },
-      tableData() {
-        return this.tableDataFromBackend;
-      },
-    },
     watch: {},
     async created() {
     },
     mounted() {
-      this.doAction('refreshTableData');
+      this.doUiAction('refreshTableData');
     },
     methods: {
-      async doAction(actionId, actionData) {
+      async doUiAction(actionId, actionData) {
         switch (actionId) {
           case 'refreshTableData':
             await this.refreshTableData(actionData);
@@ -197,7 +189,7 @@
             await this.downloadFileByStream(actionData);
             break;
           default:
-            console.error("[doAction] actionId not find", { actionId });
+            console.error("[doUiAction] actionId not find", { actionId });
             break;
         }
       },
@@ -336,7 +328,7 @@
         window.vtoast.success('删除成功')
       },
 
-      
+
       /**
        * 文件stream下载
        */

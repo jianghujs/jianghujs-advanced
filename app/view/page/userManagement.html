@@ -9,8 +9,8 @@
       <v-row class="ma-0 align-center flex-none pt-0 " :class="{'pa-4': !isMobile, 'pb-0': !isMobile, 'pa-2': isMobile}">
 
         <v-col cols="12" xs="12" sm="4" md="4" xl="4" class="pl-0">
-          <v-btn color="success" dark class="elevation-0 mr-2" @click="doAction('startCreateItem', null)">新增</v-btn>
-          <span class="body-2">共{{ tableData.length }}条记录</span>
+          <v-btn color="success" dark class="elevation-0 mr-2" @click="doUiAction('startCreateItem', null)">新增</v-btn>
+          <span class="body-2">共{{ tableDataFromBackend.length }}条记录</span>
         </v-col>
 
         <v-spacer></v-spacer>
@@ -22,7 +22,7 @@
       </v-row>
       <v-data-table
                     :headers="headers"
-                    :items="tableData"
+                    :items="tableDataFromBackend"
                     :search="searchInput"
                     :footer-props="{ itemsPerPageOptions: [20, 40, 60, 100, -1] }"
                     :items-per-page="20"
@@ -38,18 +38,18 @@
           {{ getConstantCollectionItemText('userStatus', item.userStatus) }}
         </template>
         <template v-slot:item.action="{ item }">
-          <v-btn small class="mr-2" color="success" @click="doAction('startUpdateItem', {item})">修改</v-btn>
+          <v-btn small class="mr-2" color="success" @click="doUiAction('startUpdateItem', {item})">修改</v-btn>
           <v-btn small class="mr-2" color="primary"
                  v-if="item.userStatus !== 'active'"
-                 @click="doAction('activeUserStatus', {item})">
+                 @click="doUiAction('activeUserStatus', {item})">
             激活用户
           </v-btn>
           <v-btn small class="mr-2" color="error"
                  v-if="item.userStatus === 'active'"
-                 @click="doAction('bannedUserStatus', {item})">
+                 @click="doUiAction('bannedUserStatus', {item})">
             禁用用户
           </v-btn>
-          <v-btn small class="mr-2" color="error" v-if="item.userStatus === 'active'" @click="doAction('startResetPassword', {item})">
+          <v-btn small class="mr-2" color="error" v-if="item.userStatus === 'active'" @click="doUiAction('startResetPassword', {item})">
             修改密码
           </v-btn>
         </template>
@@ -95,7 +95,7 @@
         </v-col>
       </v-row>
       <v-row class="justify-end mx-0 mt-8" :class="{'px-10': !isMobile, 'px-4': isMobile, 'mb-8': isMobile}">
-        <v-btn color="success" @click="doAction(dialogSaveInfoAction)" >保存</v-btn>
+        <v-btn color="success" @click="doUiAction(dialogSaveInfoAction)" >保存</v-btn>
         <v-btn class="elevation-0 mr-2 ml-2" @click="isEditDrawerShow = false" >取消</v-btn>
       </v-row>
     </v-form>
@@ -112,8 +112,8 @@
     el: '#app',
     template: '#app-template',
     vuetify: new Vuetify(),
-    mixins: [window.jianghuUiActionMixins],
     data: {
+      isMobile: window.innerWidth < 600,
       // 表格相关数据
       isFormValid: true,
       showLeftMenu: window.innerWidth > 600,
@@ -143,21 +143,16 @@
       dialogSaveInfoAction: ''
     },
     computed: {
-      isMobile() {
-        return window.innerWidth < 600;
-      },
-      tableData() {
-        return this.tableDataFromBackend;
-      },
+
     },
     watch: {},
     async created() {
     },
     mounted() {
-      this.doAction('refreshTableData');
+      this.doUiAction('refreshTableData');
     },
     methods: {
-      async doAction(actionId, actionData) {
+      async doUiAction(actionId, actionData) {
         switch (actionId) {
           case 'refreshTableData':
             await this.refreshTableData(actionData);
@@ -207,7 +202,7 @@
             await this.refreshTableData(actionData);
             break;
           default:
-            console.error("[doAction] actionId not find", { actionId });
+            console.error("[doUiAction] actionId not find", { actionId });
             break;
         }
       },

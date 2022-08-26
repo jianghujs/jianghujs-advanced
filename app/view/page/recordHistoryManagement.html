@@ -28,7 +28,7 @@
     </v-row>
     <v-data-table fixed-header
                   :headers="headers"
-                  :items="tableData"
+                  :items="tableDataFromBackend"
                   :search="searchInput"
                   :footer-props="{ itemsPerPageOptions: [20, 40, 60, 100, -1] }"
                   :items-per-page="20"
@@ -40,7 +40,7 @@
         {{ item.operationAt && dayjs(item.operationAt).format('YYYY-MM-DD HH:mm:ss') }}
       </template>
       <template v-slot:item.option="{ item }">
-        <v-btn small class="mr-2" color="success" :disabled="item.count === 0" @click="doAction('viewRecordHistory', {item})">
+        <v-btn small class="mr-2" color="success" :disabled="item.count === 0" @click="doUiAction('viewRecordHistory', {item})">
           <v-badge color="red" :content="item.count" :value="item.count">
             查看数据版本
           </v-badge>
@@ -88,7 +88,7 @@
           {{ item.operationAt && dayjs(item.operationAt).format('YYYY-MM-DD HH:mm:ss') }}
         </template>
         <template v-slot:item.option="{ item }">
-          <v-btn small class="mr-2" color="error" @click="doAction('restoreRecordByRecordHistory', {item})">还原数据</v-btn>
+          <v-btn small class="mr-2" color="error" @click="doUiAction('restoreRecordByRecordHistory', {item})">还原数据</v-btn>
         </template>
       </v-data-table>
     </v-row>
@@ -107,8 +107,8 @@ new Vue({
   el: '#app',
   template: '#app-template',
   vuetify: new Vuetify(),
-  mixins: [window.jianghuUiActionMixins],
   data: {
+    isMobile: window.innerWidth < 600,
     tab: null,
     // 表格相关数据
     isFormValid: true,
@@ -142,30 +142,22 @@ new Vue({
     isEditDrawerShow: false,
     drawerTableData: [],
   },
-  computed: {
-    isMobile() {
-      return window.innerWidth < 600;
-    },
-    tableData() {
-      return this.tableDataFromBackend;
-    },
-  },
   watch: {
     currentTable() {
-      this.doAction('refreshTableData')
+      this.doUiAction('refreshTableData')
     },
     currentHistoryDataType() {
-      this.doAction('refreshTableData')
+      this.doUiAction('refreshTableData')
     }
   },
   async created() {
     if (this.currentTable) {
-      this.doAction('refreshTableData')
+      this.doUiAction('refreshTableData')
     }
   },
   mounted() {},
   methods: {
-    async doAction(actionId, actionData) {
+    async doUiAction(actionId, actionData) {
       switch (actionId) {
         case 'refreshTableData':
           await this.openTableLoading(actionData);
@@ -183,7 +175,7 @@ new Vue({
           await this.refreshTableData(actionData);
           break;
         default:
-          console.error("[doAction] actionId not find", { actionId });
+          console.error("[doUiAction] actionId not find", { actionId });
           break;
       }
     },
