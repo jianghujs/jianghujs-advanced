@@ -157,22 +157,22 @@ new Vue({
   },
   mounted() {},
   methods: {
-    async doUiAction(actionId, actionData) {
+    async doUiAction(actionId, uiActionData) {
       switch (actionId) {
         case 'refreshTableData':
-          await this.openTableLoading(actionData);
-          await this.refreshTableData(actionData);
-          await this.computeHeader(actionData);
-          await this.closeTableLoading(actionData);
+          await this.openTableLoading(uiActionData);
+          await this.refreshTableData(uiActionData);
+          await this.computeHeader(uiActionData);
+          await this.closeTableLoading(uiActionData);
           break;
         case 'viewRecordHistory':
-          await this.openDrawer(actionData);
-          await this.doViewRecordHistory(actionData);
+          await this.openDrawer(uiActionData);
+          await this.doViewRecordHistory(uiActionData);
           break;
         case 'restoreRecordByRecordHistory':
-          await this.doRestoreRecordByRecordHistory(actionData);
-          await this.doViewRecordHistory(actionData);
-          await this.refreshTableData(actionData);
+          await this.doRestoreRecordByRecordHistory(uiActionData);
+          await this.doViewRecordHistory(uiActionData);
+          await this.refreshTableData(uiActionData);
           break;
         default:
           console.error("[doUiAction] actionId not find", { actionId });
