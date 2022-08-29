@@ -684,15 +684,14 @@
       // 更新修改用户、组织、角色
       async updateLeftItem() {
         window.vtoast.loading("保存中");
-        const id = this.activeItemInfo.id;
-        delete this.activeItemInfo.id;
+        const { id, userId, ...updateItem } = this.activeItemInfo;
         const actionId = ['updateUser', 'updateGroup', 'updateRole'][this.pageTab];
         await window.jianghuAxios({
           data: {
             appData: {
               pageId: 'userGroupRoleManagement',
               actionId: actionId,
-              actionData: this.activeItemInfo,
+              actionData: updateItem,
               where: {id: id}
             }
           }
