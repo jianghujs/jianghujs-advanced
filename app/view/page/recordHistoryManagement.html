@@ -40,7 +40,7 @@
         {{ item.operationAt && dayjs(item.operationAt).format('YYYY-MM-DD HH:mm:ss') }}
       </template>
       <template v-slot:item.option="{ item }">
-        <v-btn small class="mr-2" color="success" :disabled="item.count === 0" @click="doUiAction('viewRecordHistory', {item})">
+        <v-btn small class="mr-2" color="success"  @click="doUiAction('viewRecordHistory', {item})">
           <v-badge color="red" :content="item.count" :value="item.count">
             查看数据版本
           </v-badge>
@@ -117,10 +117,10 @@ new Vue({
     constantCollection: {
     },
     tableList: [
-      {"value": "_file", "text": "_file"},
+     
       {"value": "_user", "text": "_user"},
     ],
-    currentTable: '_file',
+    currentTable: '_user',
     historyDataTypeList: [
       {"value": "onUse", "text": "使用中的数据"},
       {"value": "deleted", "text": "已删除的数据"},
