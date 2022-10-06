@@ -1,28 +1,4 @@
-{% extends 'template/jhTemplateV3.html'%}
-
-{% block vue_template %}
-
-<!-- 3 table 下  的单表 crud 页面 -->
-
-<!--SQL START
--- 以下为 jianghu init 工具生成的参考 SQL，使用后删除
--- 创建 page
-INSERT INTO `_page` (`pageId`,`pageName`,`pageType`,`sort`,`operation`,`operationByUserId`,`operationByUser`,`operationAt`) SELECT 'studentManagement','页面','showInMenu','5','jhInsert',NULL,NULL,NULL FROM DUAL WHERE NOT EXISTS (SELECT `pageId` FROM `_page` WHERE `pageId`='studentManagement');
-
--- 创建 resource
-INSERT INTO `_resource` (`accessControlTable`,`resourceHook`,`pageId`,`actionId`,`desc`,`resourceType`,`appDataSchema`,`resourceData`,`requestDemo`,`responseDemo`,`operation`,`operationByUserId`,`operationByUser`,`operationAt`) SELECT NULL,NULL,'studentManagement','selectItemList','✅查询-查询列表','sql','{}','{ \"table\": \"student\", \"operation\": \"select\" }','','','insert',NULL,NULL,NULL FROM DUAL WHERE NOT EXISTS (SELECT `pageId` FROM `_resource` WHERE `pageId`='studentManagement' AND `actionId`='selectItemList');
-INSERT INTO `_resource` (`accessControlTable`,`resourceHook`,`pageId`,`actionId`,`desc`,`resourceType`,`appDataSchema`,`resourceData`,`requestDemo`,`responseDemo`,`operation`,`operationByUserId`,`operationByUser`,`operationAt`) SELECT NULL,NULL,'studentManagement','insertItem','✅查询-添加成员','sql','{}','{ \"table\": \"student\", \"operation\": \"insert\" }','','','insert',NULL,NULL,NULL FROM DUAL WHERE NOT EXISTS (SELECT `pageId` FROM `_resource` WHERE `pageId`='studentManagement' AND `actionId`='insertItem');
-INSERT INTO `_resource` (`accessControlTable`,`resourceHook`,`pageId`,`actionId`,`desc`,`resourceType`,`appDataSchema`,`resourceData`,`requestDemo`,`responseDemo`,`operation`,`operationByUserId`,`operationByUser`,`operationAt`) SELECT NULL,NULL,'studentManagement','updateItem','✅查询-更新成员','sql','{}','{ \"table\": \"student\", \"operation\": \"update\" }','','','insert',NULL,NULL,NULL FROM DUAL WHERE NOT EXISTS (SELECT `pageId` FROM `_resource` WHERE `pageId`='studentManagement' AND `actionId`='updateItem');
-INSERT INTO `_resource` (`accessControlTable`,`resourceHook`,`pageId`,`actionId`,`desc`,`resourceType`,`appDataSchema`,`resourceData`,`requestDemo`,`responseDemo`,`operation`,`operationByUserId`,`operationByUser`,`operationAt`) SELECT NULL,NULL,'studentManagement','deleteItem','✅查询-删除信息','sql','{}','{ \"table\": \"student\", \"operation\": \"delete\" }','','','insert',NULL,NULL,NULL FROM DUAL WHERE NOT EXISTS (SELECT `pageId` FROM `_resource` WHERE `pageId`='studentManagement' AND `actionId`='deleteItem');
-SQL END!-->
-
-<jh-layout-v3>
-
-  <template slot="serverSearch">
-    <div v-if="!isMobile" style="text-align: right;" :style="{'line-height': isMobile ? '22px' : '64px', 'font-size': isMobile ? '12px' : '14px'}" :class="{ 'mt-0': isMobile}">
-      <span class="grey pa-2" style="border-radius: 4px; color: #ffffff">此页面用来演示抽屉嵌套：修改学生信息时，为学生添加联系人</span>
-    </div>
-  </template>
+<template id="task-of-student">
 
 <!-- 页面主要内容 -->
 <v-container class="fullScreen d-flex flex-column pa-xs-0 pa-0">
@@ -30,7 +6,7 @@ SQL END!-->
   <v-row class="ma-0 pa-xs-4 align-center flex-none pt-0 " :class="{'pa-4': !isMobile, 'pb-0': !isMobile, 'pa-2': isMobile}">
 
       <v-col cols="12" xs="4" sm="4" md="4" xl="4" class="pl-0">
-        <v-btn color="success" dark class="elevation-0 mr-2" @click="doUiAction('startCreateItem')">新增</v-btn>
+        <v-btn color="success" dark class="elevation-0 mr-2" @click="doUiAction('startCreateItem')">新增任务</v-btn>
         <span class="body-2">共{{ tableData.length }}条记录</span>
       </v-col>
 
@@ -66,7 +42,6 @@ SQL END!-->
       </template>
     </v-data-table>
   </v-card>
-</v-container>
 
 <!-- 新增 -->
 <v-navigation-drawer v-model="isAddDrawerShow" :permanent="isAddDrawerShow" fixed temporary right width="80%" class="elevation-24">
@@ -86,43 +61,13 @@ SQL END!-->
       </v-col>
        
       <v-col cols="12" sm="12" md="4" xl="3" :class="{'pa-0': isMobile, 'px-4': isMobile, 'pt-6': isMobile}">
-        <span class="inputLabel">学生名字</span>
-        <v-text-field class="cus-v-input " dense filled single-line v-model="addItem['name']"></v-text-field>
+        <span class="inputLabel">联系人名字</span>
+        <v-text-field class="cus-v-input " dense filled single-line v-model="addItem['taskName']"></v-text-field>
       </v-col>
        
       <v-col cols="12" sm="12" md="4" xl="3" :class="{'pa-0': isMobile, 'px-4': isMobile, 'pt-6': isMobile}">
-        <span class="inputLabel">性别</span>
-        <v-text-field class="cus-v-input " dense filled single-line v-model="addItem['gender']"></v-text-field>
-      </v-col>
-       
-      <v-col cols="12" sm="12" md="4" xl="3" :class="{'pa-0': isMobile, 'px-4': isMobile, 'pt-6': isMobile}">
-        <span class="inputLabel">出生日期</span>
-        <v-text-field class="cus-v-input " dense filled single-line v-model="addItem['dateOfBirth']"></v-text-field>
-      </v-col>
-       
-      <v-col cols="12" sm="12" md="4" xl="3" :class="{'pa-0': isMobile, 'px-4': isMobile, 'pt-6': isMobile}">
-        <span class="inputLabel">班级ID</span>
-        <v-text-field class="cus-v-input " dense filled single-line v-model="addItem['classId']"></v-text-field>
-      </v-col>
-       
-      <v-col cols="12" sm="12" md="4" xl="3" :class="{'pa-0': isMobile, 'px-4': isMobile, 'pt-6': isMobile}">
-        <span class="inputLabel">年级</span>
-        <v-text-field class="cus-v-input " dense filled single-line v-model="addItem['level']"></v-text-field>
-      </v-col>
-       
-      <v-col cols="12" sm="12" md="4" xl="3" :class="{'pa-0': isMobile, 'px-4': isMobile, 'pt-6': isMobile}">
-        <span class="inputLabel">身高</span>
-        <v-text-field class="cus-v-input " dense filled single-line v-model="addItem['bodyHeight']"></v-text-field>
-      </v-col>
-       
-      <v-col cols="12" sm="12" md="4" xl="3" :class="{'pa-0': isMobile, 'px-4': isMobile, 'pt-6': isMobile}">
-        <span class="inputLabel">学生状态</span>
-        <v-text-field class="cus-v-input " dense filled single-line v-model="addItem['studentStatus']"></v-text-field>
-      </v-col>
-       
-      <v-col cols="12" sm="12" md="4" xl="3" :class="{'pa-0': isMobile, 'px-4': isMobile, 'pt-6': isMobile}">
-        <span class="inputLabel">备注</span>
-        <v-text-field class="cus-v-input " dense filled single-line v-model="addItem['remarks']"></v-text-field>
+        <span class="inputLabel">联系人角色</span>
+        <v-text-field class="cus-v-input " dense filled single-line v-model="addItem['taskComment']"></v-text-field>
       </v-col>
        
     </v-row>
@@ -152,43 +97,13 @@ SQL END!-->
       </v-col>
        
       <v-col cols="12" sm="12" md="4" xl="3" :class="{'pa-0': isMobile, 'px-4': isMobile, 'pt-6': isMobile}">
-        <span class="inputLabel">学生名字</span>
-        <v-text-field class="cus-v-input " dense filled single-line v-model="editItem['name']"></v-text-field>
+        <span class="inputLabel">联系人名字</span>
+        <v-text-field class="cus-v-input " dense filled single-line v-model="editItem['taskName']"></v-text-field>
       </v-col>
        
       <v-col cols="12" sm="12" md="4" xl="3" :class="{'pa-0': isMobile, 'px-4': isMobile, 'pt-6': isMobile}">
-        <span class="inputLabel">性别</span>
-        <v-text-field class="cus-v-input " dense filled single-line v-model="editItem['gender']"></v-text-field>
-      </v-col>
-       
-      <v-col cols="12" sm="12" md="4" xl="3" :class="{'pa-0': isMobile, 'px-4': isMobile, 'pt-6': isMobile}">
-        <span class="inputLabel">出生日期</span>
-        <v-text-field class="cus-v-input " dense filled single-line v-model="editItem['dateOfBirth']"></v-text-field>
-      </v-col>
-       
-      <v-col cols="12" sm="12" md="4" xl="3" :class="{'pa-0': isMobile, 'px-4': isMobile, 'pt-6': isMobile}">
-        <span class="inputLabel">班级ID</span>
-        <v-text-field class="cus-v-input " dense filled single-line v-model="editItem['classId']"></v-text-field>
-      </v-col>
-       
-      <v-col cols="12" sm="12" md="4" xl="3" :class="{'pa-0': isMobile, 'px-4': isMobile, 'pt-6': isMobile}">
-        <span class="inputLabel">年级</span>
-        <v-text-field class="cus-v-input " dense filled single-line v-model="editItem['level']"></v-text-field>
-      </v-col>
-       
-      <v-col cols="12" sm="12" md="4" xl="3" :class="{'pa-0': isMobile, 'px-4': isMobile, 'pt-6': isMobile}">
-        <span class="inputLabel">身高</span>
-        <v-text-field class="cus-v-input " dense filled single-line v-model="editItem['bodyHeight']"></v-text-field>
-      </v-col>
-       
-      <v-col cols="12" sm="12" md="4" xl="3" :class="{'pa-0': isMobile, 'px-4': isMobile, 'pt-6': isMobile}">
-        <span class="inputLabel">学生状态</span>
-        <v-text-field class="cus-v-input " dense filled single-line v-model="editItem['studentStatus']"></v-text-field>
-      </v-col>
-       
-      <v-col cols="12" sm="12" md="4" xl="3" :class="{'pa-0': isMobile, 'px-4': isMobile, 'pt-6': isMobile}">
-        <span class="inputLabel">备注</span>
-        <v-text-field class="cus-v-input " dense filled single-line v-model="editItem['remarks']"></v-text-field>
+        <span class="inputLabel">联系人角色</span>
+        <v-text-field class="cus-v-input " dense filled single-line v-model="editItem['taskComment']"></v-text-field>
       </v-col>
        
 <!--      <v-col cols="12" sm="12" md="4" xl="3" :class="{'pa-0': isMobile, 'px-4': isMobile, 'pt-6': isMobile}">-->
@@ -215,27 +130,16 @@ SQL END!-->
     <v-row class="justify-end mx-0 mt-8" :class="{'px-10': !isMobile, 'px-4': isMobile, 'mb-8': isMobile}">
       <v-btn color="success" @click="doUiAction('updateItem')">保存</v-btn>
       <v-btn class="ml-2" @click="isEditDrawerShow = false">取消</v-btn>
-      <v-col cols="12">
-        <v-divider></v-divider>
-      </v-col>
     </v-row>
-    <v-row class="px-10 pb-2">
-      <contacts-of-student :student-id="editItem.studentId"></contacts-of-student>
-    </v-row>
-  </v-form>
-</v-navigation-drawer>
-
-</jh-layout-v3>
-
-{% endblock %}
-{% block vue_body %}
-{% include 'component/contactsOfStudent.html' %}
+   </v-form>
+  </v-navigation-drawer>
+  </v-container>
+</template>
 
 <script type="module">
-new Vue({
-  el: '#app',
-  template: '#app-template',
-  vuetify: new Vuetify(),
+Vue.component("task-of-student",{
+  template: '#task-of-student',
+  props: ['studentId'],
   data: () => ({
     // 表格相关数据
     isFormValid: true,
@@ -256,14 +160,8 @@ new Vue({
       {text: "ID", value: "id", width: 120, class: 'fixed', cellClass: 'fixed'},
        
       {text: "学生ID", value: "studentId", width: 120}, 
-      {text: "学生名字", value: "name", width: 120}, 
-      {text: "性别", value: "gender", width: 120}, 
-      {text: "出生日期", value: "dateOfBirth", width: 120}, 
-      {text: "班级ID", value: "classId", width: 120}, 
-      {text: "年级", value: "level", width: 120}, 
-      {text: "身高", value: "bodyHeight", width: 120}, 
-      {text: "学生状态", value: "studentStatus", width: 120}, 
-      {text: "备注", value: "remarks", width: 120}, 
+      {text: "联系人名字", value: "taskName", width: 120}, 
+      {text: "联系人角色", value: "taskComment", width: 120}, 
       {text: "操作者", value: "operationByUser", width: 120},
       {text: "操作时间", value: "operationAt", width: 250},
       {text: '操作', value: 'action', align: 'center', sortable: false, width: 200, class: 'fixed', cellClass: 'fixed'},
@@ -281,7 +179,11 @@ new Vue({
       return this.tableDataFromBackend;
     }
   },
-  watch: {},
+  watch: {
+    studentId() {
+      this.doUiAction('refreshTableData');
+    }
+  },
   async created() {
     await this.doUiAction('refreshTableData');
   },
@@ -330,14 +232,20 @@ new Vue({
     */
     async refreshTableData() {
       this.isTableLoading = true;
+      if (!this.studentId) {
+        this.tableDataFromBackend = [];
+        this.isTableLoading = false;
+        this.selectedRows = [];
+        return
+      }
       const serverSearchInput = _.pickBy(this.serverSearchInput, value=> !!value);
       const { data: { appData: { rows } } } = await window.jianghuAxios({
         data: {
           appData: {
-            pageId: 'studentManagement',
+            pageId: 'taskOfStudent',
             actionId: 'selectItemList',
             actionData: {},
-            where: {},
+            where: {studentId:this.studentId},
             whereLike: serverSearchInput,
             orderBy: [{column: 'operationAt', order: 'desc'}]
           }
@@ -347,6 +255,8 @@ new Vue({
       this.tableDataFromBackend = rows;
       this.isTableLoading = false;
     },
+
+
     // =================================uiAction 公共方法 end ======================================
 
 
@@ -376,7 +286,7 @@ new Vue({
       await window.jianghuAxios({
         data: {
           appData: {
-            pageId: 'studentManagement',
+            pageId: 'studenttaskManagement',
             actionId: 'insertItem',
             actionData: data
           }
@@ -414,7 +324,7 @@ new Vue({
       await window.jianghuAxios({
         data: {
           appData: {
-            pageId: 'studentManagement',
+            pageId: 'studenttaskManagement',
             actionId: 'updateItem',
             actionData: data,
             where: {id}
@@ -439,7 +349,7 @@ new Vue({
       await window.jianghuAxios({
         data: {
           appData: {
-            pageId: 'studentManagement',
+            pageId: 'studenttaskManagement',
             actionId: 'deleteItem',
             actionData: {},
             where: { id: id }
@@ -451,7 +361,3 @@ new Vue({
   }
 })
 </script>
-
-<style scoped>
-</style>
-{% endblock %}

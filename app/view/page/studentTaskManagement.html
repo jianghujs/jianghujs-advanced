@@ -20,7 +20,7 @@ SQL END!-->
 
   <template slot="serverSearch">
     <div v-if="!isMobile" style="text-align: right;" :style="{'line-height': isMobile ? '22px' : '64px', 'font-size': isMobile ? '12px' : '14px'}" :class="{ 'mt-0': isMobile}">
-      <span class="grey pa-2" style="border-radius: 4px; color: #ffffff">此页面用来演示抽屉嵌套：修改学生信息时，为学生添加联系人</span>
+      <span class="grey pa-2" style="border-radius: 4px; color: #ffffff">此页面用来演示表单联动：勾选学生信息，查看/修改学生任务</span>
     </div>
   </template>
 
@@ -56,9 +56,16 @@ SQL END!-->
                   :search="searchInput"
                   :footer-props="{ itemsPerPageOptions: [20, 40, 60, 100, -1] }"
                   :items-per-page="20"
+                  v-model="selectedRows"
                   mobile-breakpoint="0"
                   :loading="isTableLoading"
                   checkbox-color="success"
+                  show-select
+                single-select
+                @click:row="(item, row) => {
+                  row.select(true);
+                }"
+                item-key="studentId"
                   class="elevation-0 mt-0 mb-xs-4 flex-fill d-flex flex-column">
       <template v-slot:item.action="{ item }">
         <v-btn small class=" success" @click="doUiAction('startUpdateItem', {item})">修改</v-btn>
@@ -66,6 +73,7 @@ SQL END!-->
       </template>
     </v-data-table>
   </v-card>
+  <task-of-student :studentId="selectStudentId"></task-of-student>
 </v-container>
 
 <!-- 新增 -->
@@ -219,9 +227,6 @@ SQL END!-->
         <v-divider></v-divider>
       </v-col>
     </v-row>
-    <v-row class="px-10 pb-2">
-      <contacts-of-student :student-id="editItem.studentId"></contacts-of-student>
-    </v-row>
   </v-form>
 </v-navigation-drawer>
 
@@ -230,6 +235,7 @@ SQL END!-->
 {% endblock %}
 {% block vue_body %}
 {% include 'component/contactsOfStudent.html' %}
+{% include 'component/taskOfStudent.html' %}
 
 <script type="module">
 new Vue({
@@ -253,7 +259,7 @@ new Vue({
     isTableLoading: true,
     tableDataFromBackend: [],
     headers: [
-      {text: "ID", value: "id", width: 120, class: 'fixed', cellClass: 'fixed'},
+      // {text: "ID", value: "id", width: 120, class: 'fixed', cellClass: 'fixed'},
        
       {text: "学生ID", value: "studentId", width: 120}, 
       {text: "学生名字", value: "name", width: 120}, 
@@ -268,6 +274,8 @@ new Vue({
       {text: "操作时间", value: "operationAt", width: 250},
       {text: '操作', value: 'action', align: 'center', sortable: false, width: 200, class: 'fixed', cellClass: 'fixed'},
     ],
+    selectedItem: 0,
+    selectedRows: [],
     isEditDrawerShow: false,
     editItem: {},
     isAddDrawerShow: false,
@@ -279,7 +287,10 @@ new Vue({
     },
     tableData() {
       return this.tableDataFromBackend;
-    }
+    },
+    selectStudentId() {
+      return this.selectedRows.length ? this.selectedRows[0].studentId : 0;
+    },
   },
   watch: {},
   async created() {
