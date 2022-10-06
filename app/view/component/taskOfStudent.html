@@ -61,12 +61,12 @@
       </v-col>
        
       <v-col cols="12" sm="12" md="4" xl="3" :class="{'pa-0': isMobile, 'px-4': isMobile, 'pt-6': isMobile}">
-        <span class="inputLabel">联系人名字</span>
+        <span class="inputLabel">任务</span>
         <v-text-field class="cus-v-input " dense filled single-line v-model="addItem['taskName']"></v-text-field>
       </v-col>
        
       <v-col cols="12" sm="12" md="4" xl="3" :class="{'pa-0': isMobile, 'px-4': isMobile, 'pt-6': isMobile}">
-        <span class="inputLabel">联系人角色</span>
+        <span class="inputLabel">任务评语</span>
         <v-text-field class="cus-v-input " dense filled single-line v-model="addItem['taskComment']"></v-text-field>
       </v-col>
        
@@ -97,12 +97,12 @@
       </v-col>
        
       <v-col cols="12" sm="12" md="4" xl="3" :class="{'pa-0': isMobile, 'px-4': isMobile, 'pt-6': isMobile}">
-        <span class="inputLabel">联系人名字</span>
+        <span class="inputLabel">任务</span>
         <v-text-field class="cus-v-input " dense filled single-line v-model="editItem['taskName']"></v-text-field>
       </v-col>
        
       <v-col cols="12" sm="12" md="4" xl="3" :class="{'pa-0': isMobile, 'px-4': isMobile, 'pt-6': isMobile}">
-        <span class="inputLabel">联系人角色</span>
+        <span class="inputLabel">任务评语</span>
         <v-text-field class="cus-v-input " dense filled single-line v-model="editItem['taskComment']"></v-text-field>
       </v-col>
        
@@ -160,8 +160,8 @@ Vue.component("task-of-student",{
       {text: "ID", value: "id", width: 120, class: 'fixed', cellClass: 'fixed'},
        
       {text: "学生ID", value: "studentId", width: 120}, 
-      {text: "联系人名字", value: "taskName", width: 120}, 
-      {text: "联系人角色", value: "taskComment", width: 120}, 
+      {text: "任务", value: "taskName", width: 120}, 
+      {text: "任务评语", value: "taskComment", width: 120}, 
       {text: "操作者", value: "operationByUser", width: 120},
       {text: "操作时间", value: "operationAt", width: 250},
       {text: '操作', value: 'action', align: 'center', sortable: false, width: 200, class: 'fixed', cellClass: 'fixed'},
