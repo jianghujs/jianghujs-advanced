@@ -47,10 +47,10 @@
     </v-row>
     <v-row :class="{'px-10': !isMobile, 'px-3': isMobile, 'pb-7': isMobile}">
        
-      <v-col cols="12" sm="12" md="4" xl="3" :class="{'pa-0': isMobile, 'px-4': isMobile, 'pt-6': isMobile}">
+      <!-- <v-col cols="12" sm="12" md="4" xl="3" :class="{'pa-0': isMobile, 'px-4': isMobile, 'pt-6': isMobile}">
         <span class="inputLabel">学生ID</span>
         <v-text-field class="cus-v-input " dense filled single-line v-model="addItem['studentId']"></v-text-field>
-      </v-col>
+      </v-col> -->
        
       <v-col cols="12" sm="12" md="4" xl="3" :class="{'pa-0': isMobile, 'px-4': isMobile, 'pt-6': isMobile}">
         <span class="inputLabel">联系人名字</span>
@@ -93,10 +93,10 @@
     </v-row>
     <v-row :class="{'px-10': !isMobile, 'px-3': isMobile, 'pb-7': isMobile}">
        
-      <v-col cols="12" sm="12" md="4" xl="3" :class="{'pa-0': isMobile, 'px-4': isMobile, 'pt-6': isMobile}">
+      <!-- <v-col cols="12" sm="12" md="4" xl="3" :class="{'pa-0': isMobile, 'px-4': isMobile, 'pt-6': isMobile}">
         <span class="inputLabel">学生ID</span>
         <v-text-field class="cus-v-input " dense filled single-line v-model="editItem['studentId']"></v-text-field>
-      </v-col>
+      </v-col> -->
        
       <v-col cols="12" sm="12" md="4" xl="3" :class="{'pa-0': isMobile, 'px-4': isMobile, 'pt-6': isMobile}">
         <span class="inputLabel">联系人名字</span>
@@ -247,7 +247,9 @@ Vue.component("contacts-of-student",{
      * description: ✅获取表格数据
     */
     async clearItemData() {
-      this.addItem = {};
+      this.addItem = {
+        studentId:this.studentId
+      };
     },
     async openCreateItemDialog() {
       this.isAddDrawerShow = true;

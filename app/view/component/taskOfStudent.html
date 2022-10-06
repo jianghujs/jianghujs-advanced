@@ -55,10 +55,10 @@
     </v-row>
     <v-row :class="{'px-10': !isMobile, 'px-3': isMobile, 'pb-7': isMobile}">
        
-      <v-col cols="12" sm="12" md="4" xl="3" :class="{'pa-0': isMobile, 'px-4': isMobile, 'pt-6': isMobile}">
+      <!-- <v-col cols="12" sm="12" md="4" xl="3" :class="{'pa-0': isMobile, 'px-4': isMobile, 'pt-6': isMobile}">
         <span class="inputLabel">学生ID</span>
         <v-text-field class="cus-v-input " dense filled single-line v-model="addItem['studentId']"></v-text-field>
-      </v-col>
+      </v-col> -->
        
       <v-col cols="12" sm="12" md="4" xl="3" :class="{'pa-0': isMobile, 'px-4': isMobile, 'pt-6': isMobile}">
         <span class="inputLabel">任务</span>
@@ -91,10 +91,10 @@
     </v-row>
     <v-row :class="{'px-10': !isMobile, 'px-3': isMobile, 'pb-7': isMobile}">
        
-      <v-col cols="12" sm="12" md="4" xl="3" :class="{'pa-0': isMobile, 'px-4': isMobile, 'pt-6': isMobile}">
+      <!-- <v-col cols="12" sm="12" md="4" xl="3" :class="{'pa-0': isMobile, 'px-4': isMobile, 'pt-6': isMobile}">
         <span class="inputLabel">学生ID</span>
         <v-text-field class="cus-v-input " dense filled single-line v-model="editItem['studentId']"></v-text-field>
-      </v-col>
+      </v-col> -->
        
       <v-col cols="12" sm="12" md="4" xl="3" :class="{'pa-0': isMobile, 'px-4': isMobile, 'pt-6': isMobile}">
         <span class="inputLabel">任务</span>
@@ -157,12 +157,12 @@ Vue.component("task-of-student",{
     isTableLoading: true,
     tableDataFromBackend: [],
     headers: [
-      {text: "ID", value: "id", width: 120, class: 'fixed', cellClass: 'fixed'},
+      // {text: "ID", value: "id", width: 120, class: 'fixed', cellClass: 'fixed'},
        
-      {text: "学生ID", value: "studentId", width: 120}, 
-      {text: "任务", value: "taskName", width: 120}, 
-      {text: "任务评语", value: "taskComment", width: 120}, 
-      {text: "操作者", value: "operationByUser", width: 120},
+      {text: "学生ID", value: "studentId", width: 230}, 
+      {text: "任务", value: "taskName", width: 230}, 
+      {text: "任务评语", value: "taskComment", width: 230}, 
+      {text: "操作者", value: "operationByUser", width: 230},
       {text: "操作时间", value: "operationAt", width: 250},
       {text: '操作', value: 'action', align: 'center', sortable: false, width: 200, class: 'fixed', cellClass: 'fixed'},
     ],
@@ -265,7 +265,9 @@ Vue.component("task-of-student",{
      * description: ✅获取表格数据
     */
     async clearItemData() {
-      this.addItem = {};
+      this.addItem = {
+        studentId: this.studentId
+      };
     },
     async openCreateItemDialog() {
       this.isAddDrawerShow = true;
@@ -286,7 +288,7 @@ Vue.component("task-of-student",{
       await window.jianghuAxios({
         data: {
           appData: {
-            pageId: 'studenttaskManagement',
+            pageId: 'taskOfStudent',
             actionId: 'insertItem',
             actionData: data
           }
@@ -324,7 +326,7 @@ Vue.component("task-of-student",{
       await window.jianghuAxios({
         data: {
           appData: {
-            pageId: 'studenttaskManagement',
+            pageId: 'taskOfStudent',
             actionId: 'updateItem',
             actionData: data,
             where: {id}
@@ -349,7 +351,7 @@ Vue.component("task-of-student",{
       await window.jianghuAxios({
         data: {
           appData: {
-            pageId: 'studenttaskManagement',
+            pageId: 'taskOfStudent',
             actionId: 'deleteItem',
             actionData: {},
             where: { id: id }
