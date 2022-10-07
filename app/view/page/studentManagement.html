@@ -20,7 +20,7 @@ SQL END!-->
 
   <template slot="serverSearch">
     <div v-if="!isMobile" style="text-align: right;" :style="{'line-height': isMobile ? '22px' : '64px', 'font-size': isMobile ? '12px' : '14px'}" :class="{ 'mt-0': isMobile}">
-      <span class="grey pa-2" style="border-radius: 4px; color: #ffffff">此页面用来演示抽屉嵌套：修改学生信息时，为学生添加联系人</span>
+      <span class="grey pa-2" style="border-radius: 4px; color: #ffffff">此页面用来演示1page-2table-示例1：修改学生信息时，为学生添加联系人</span>
     </div>
   </template>
 
@@ -36,16 +36,6 @@ SQL END!-->
 
       <v-spacer></v-spacer>
 
-      <!--<v-col cols="12" xs="3" sm="3" md="2" xl="2" class="pl-0">
-        <v-text-field v-model="serverSearchInput.articleTitle" label="文章标题" class="cus-v-input" dense filled single-line>
-        </v-text-field>
-      </v-col>
-      <v-col cols="12" xs="3" sm="3" md="2" xl="2" class="pa-xs-0 pa-xs-2 col-sm-8-flex pl-0">
-        <v-select @mouseup="openSelectCategoryDialog" v-model="serverSearchInput.categoryId"
-          :items="constantCollection.category" readonly label="分类" hide-details dense filled single-line hide-no-data
-          hide-selected />
-      </v-col>
-      -->
       <v-col cols="12" xs="3" sm="3" md="2" xl="2" class="pa-xs-0 pa-xs-2 col-sm-8-flex">
         <v-text-field v-model="searchInput" label="表格过滤" class="cus-v-input" dense filled single-line></v-text-field>
       </v-col>
@@ -244,11 +234,6 @@ new Vue({
     ],
     constantCollection: {
     },
-
-    serverSearchInput: {
-      studentId: null,
-      classId: null
-    },
     searchInput: null,
     isTableLoading: true,
     tableDataFromBackend: [],
@@ -330,7 +315,6 @@ new Vue({
     */
     async refreshTableData() {
       this.isTableLoading = true;
-      const serverSearchInput = _.pickBy(this.serverSearchInput, value=> !!value);
       const { data: { appData: { rows } } } = await window.jianghuAxios({
         data: {
           appData: {
@@ -338,7 +322,6 @@ new Vue({
             actionId: 'selectItemList',
             actionData: {},
             where: {},
-            whereLike: serverSearchInput,
             orderBy: [{column: 'operationAt', order: 'desc'}]
           }
         }
