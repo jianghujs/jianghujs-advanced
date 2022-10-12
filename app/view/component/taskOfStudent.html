@@ -239,7 +239,7 @@ Vue.component("task-of-student",{
         return
       }
       const serverSearchInput = _.pickBy(this.serverSearchInput, value=> !!value);
-      const { data: { appData: { rows } } } = await window.jianghuAxios({
+      const result = await window.jianghuAxios({
         data: {
           appData: {
             pageId: 'taskOfStudent',
@@ -252,7 +252,7 @@ Vue.component("task-of-student",{
         }
       });
 
-      this.tableDataFromBackend = rows;
+      this.tableDataFromBackend = result.data.appData.resultData.rows;
       this.isTableLoading = false;
     },
 
