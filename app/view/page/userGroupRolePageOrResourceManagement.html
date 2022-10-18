@@ -86,23 +86,23 @@
       </v-col>
       <v-col cols="12" sm="12" md="4" :class="{'pa-0': isMobile, 'px-3': isMobile, 'pt-6': isMobile}">
         <span class="inputLabel">GroupID/通配符(*)</span>
-        <v-select class="cus-v-input mr-2" dense filled single-line clearable label="GroupID/通配符(*)"
-                  v-model="editItem.group" :items="constantCollection.group"></v-select>
+        <v-autocomplete class="cus-v-input mr-2" dense filled single-line clearable label="GroupID/通配符(*)"
+          v-model="editItem.group" :items="constantCollection.group.filter(item => item.value)" @update:search-input="onConstantSearch($event, 'group')"></v-autocomplete>
       </v-col>
       <v-col cols="12" sm="12" md="4" :class="{'pa-0': isMobile, 'px-3': isMobile, 'pt-6': isMobile}">
         <span class="inputLabel">RoleID/通配符(*)</span>
-        <v-select class="cus-v-input mr-2" dense filled single-line clearable label="RoleID/通配符(*)"
-                  v-model="editItem.role" :items="constantCollection.role"></v-select>
+        <v-autocomplete class="cus-v-input mr-2" dense filled single-line clearable label="RoleID/通配符(*)"
+                  v-model="editItem.role" :items="constantCollection.role.filter(item => item.value)" @update:search-input="onConstantSearch($event, 'role')"></v-autocomplete>
       </v-col>
       <v-col cols="12" sm="12" md="4" xl="3" class="pb-xs-4 pb-3" v-if="pageTab === 0">
         <span class="inputLabel">ResourceId/通配符(*)</span>
-        <v-select class="cus-v-input mr-2" dense filled single-line clearable label="ResourceId/通配符(*)"
-                  v-model="editItem.resource" :items="constantCollection.resource"></v-select>
+        <v-autocomplete class="cus-v-input mr-2" dense filled single-line clearable label="ResourceId/通配符(*)"
+                  v-model="editItem.resource" :items="constantCollection.resource.filter(item => item.value)" @update:search-input="onConstantSearch($event, 'resource')"></v-autocomplete>
       </v-col>
       <v-col cols="12" sm="12" md="4" xl="3" class="pb-xs-4 pb-3" v-if="pageTab === 1">
         <span class="inputLabel">PageId/通配符(*)</span>
-        <v-select class="cus-v-input mr-2" dense filled single-line clearable label="PageId/通配符(*)"
-                  v-model="editItem.page" :items="constantCollection.page"></v-select>
+        <v-autocomplete class="cus-v-input mr-2" dense filled single-line clearable label="PageId/通配符(*)"
+                  v-model="editItem.page" :items="constantCollection.page.filter(item => item.value)" @update:search-input="onConstantSearch($event, 'page')"></v-autocomplete>
       </v-col>
       <v-col cols="12" sm="12" md="4" :class="{'pa-0': isMobile, 'px-3': isMobile, 'pt-6': isMobile}">
         <span class="inputLabel">权限状态</span>
@@ -141,10 +141,10 @@ new Vue({
     showLeftMenu: window.innerWidth > 600,
     requireRules: [v => !!v || 'This is required'],
     constantCollection: {
-      group: [{"value": "*", "text": "通配符*"}],
-      role: [{"value": "*", "text": "通配符*"}],
-      resource: [{"value": "*", "text": "通配符*"}],
-      page: [{"value": "*", "text": "通配符*"}],
+      group: [{"value": "*", "text": "通配符*"}, {custom: true}],
+      role: [{"value": "*", "text": "通配符*"}, {custom: true}],
+      resource: [{"value": "*", "text": "通配符*"}, {custom: true}],
+      page: [{"value": "*", "text": "通配符*"}, {custom: true}],
       allowOrDeny: [{"value": "allow", "text": "Allow"}, {"value": "deny", "text": "Deny"}],
     },
     isEditDrawerShow: false,
@@ -367,6 +367,12 @@ new Vue({
         return constantCollectionItemFind.text;
       }
       return _value;
+    },
+    onConstantSearch(e, key) {
+      let customItem = this.constantCollection[key].find(item => item.custom)
+      this.$set(customItem, 'value', e);
+      this.$set(customItem, 'text', e);
+      this.editItem[key] = e
     }
   }
 })
