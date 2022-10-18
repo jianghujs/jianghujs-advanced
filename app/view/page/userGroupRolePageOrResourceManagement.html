@@ -195,6 +195,21 @@ new Vue({
         this.pageId = 'Page';
       }
       this.doUiAction('refreshTableData');
+    },
+    'editItem.user'(value) {
+      this.onConstantChange(value, 'user');
+    },
+    'editItem.group'(value) {
+      this.onConstantChange(value, 'group');
+    },
+    'editItem.role'(value) {
+      this.onConstantChange(value, 'role');
+    },
+    'editItem.resource'(value) {
+      this.onConstantChange(value, 'resource');
+    },
+    'editItem.page'(value) {
+      this.onConstantChange(value, 'page');
     }
   },
   async created() {
@@ -303,6 +318,11 @@ new Vue({
     // startUpdateItem
     async prepareItemData({item}) {
       this.editItem = {...item};
+      this.editItem.user = this.getConstantCollectionItemValue('user', item.user)
+      this.editItem.group = this.getConstantCollectionItemValue('group', item.group);
+      this.editItem.role = this.getConstantCollectionItemValue('role', item.role);
+      this.editItem.resource = this.getConstantCollectionItemValue('resource', item.resource);
+      this.editItem.page = this.getConstantCollectionItemValue('page', item.page);
     },
 
     async openUpdateItemDialog() {
@@ -368,6 +388,13 @@ new Vue({
         return constantCollectionItemFind.text;
       }
       return _value;
+    },
+    getConstantCollectionItemValue(key, _text) {
+      const constantCollectionItemFind = this.constantCollection[key].find(({text}) => text === _text);
+      if (constantCollectionItemFind) {
+        return constantCollectionItemFind.value;
+      }
+      return _text;
     },
     onConstantChange(e, key) {
       let customItem = this.constantCollection[key].find(item => item.custom)
