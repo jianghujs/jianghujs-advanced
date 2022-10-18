@@ -81,28 +81,28 @@
     <v-row :class="{'px-10': !isMobile, 'px-3': isMobile, 'pb-7': isMobile}">
       <v-col cols="12" sm="12" md="4" :class="{'pa-0': isMobile, 'px-3': isMobile, 'pt-6': isMobile}">
         <span class="inputLabel">用户ID/通配符(*)</span>
-        <v-text-field class="cus-v-input mr-2" dense filled single-line label="用户ID/通配符(*)"
-                      v-model="editItem.user"></v-text-field>
+        <v-autocomplete class="cus-v-input mr-2" dense filled single-line clearable label="用户ID/通配符(*)"
+          v-model="editItem.user" :items="constantCollection.user.filter(item => item.value)" @change="onConstantChange($event, 'user')" @update:search-input="onConstantChange($event, 'user')"></v-autocomplete>
       </v-col>
       <v-col cols="12" sm="12" md="4" :class="{'pa-0': isMobile, 'px-3': isMobile, 'pt-6': isMobile}">
         <span class="inputLabel">GroupID/通配符(*)</span>
         <v-autocomplete class="cus-v-input mr-2" dense filled single-line clearable label="GroupID/通配符(*)"
-          v-model="editItem.group" :items="constantCollection.group.filter(item => item.value)" @update:search-input="onConstantSearch($event, 'group')"></v-autocomplete>
+          v-model="editItem.group" :items="constantCollection.group.filter(item => item.value)" @update:search-input="onConstantChange($event, 'group')"></v-autocomplete>
       </v-col>
       <v-col cols="12" sm="12" md="4" :class="{'pa-0': isMobile, 'px-3': isMobile, 'pt-6': isMobile}">
         <span class="inputLabel">RoleID/通配符(*)</span>
         <v-autocomplete class="cus-v-input mr-2" dense filled single-line clearable label="RoleID/通配符(*)"
-                  v-model="editItem.role" :items="constantCollection.role.filter(item => item.value)" @update:search-input="onConstantSearch($event, 'role')"></v-autocomplete>
+                  v-model="editItem.role" :items="constantCollection.role.filter(item => item.value)" @update:search-input="onConstantChange($event, 'role')"></v-autocomplete>
       </v-col>
       <v-col cols="12" sm="12" md="4" xl="3" class="pb-xs-4 pb-3" v-if="pageTab === 0">
         <span class="inputLabel">ResourceId/通配符(*)</span>
         <v-autocomplete class="cus-v-input mr-2" dense filled single-line clearable label="ResourceId/通配符(*)"
-                  v-model="editItem.resource" :items="constantCollection.resource.filter(item => item.value)" @update:search-input="onConstantSearch($event, 'resource')"></v-autocomplete>
+                  v-model="editItem.resource" :items="constantCollection.resource.filter(item => item.value)" @update:search-input="onConstantChange($event, 'resource')"></v-autocomplete>
       </v-col>
       <v-col cols="12" sm="12" md="4" xl="3" class="pb-xs-4 pb-3" v-if="pageTab === 1">
         <span class="inputLabel">PageId/通配符(*)</span>
         <v-autocomplete class="cus-v-input mr-2" dense filled single-line clearable label="PageId/通配符(*)"
-                  v-model="editItem.page" :items="constantCollection.page.filter(item => item.value)" @update:search-input="onConstantSearch($event, 'page')"></v-autocomplete>
+                  v-model="editItem.page" :items="constantCollection.page.filter(item => item.value)" @update:search-input="onConstantChange($event, 'page')"></v-autocomplete>
       </v-col>
       <v-col cols="12" sm="12" md="4" :class="{'pa-0': isMobile, 'px-3': isMobile, 'pt-6': isMobile}">
         <span class="inputLabel">权限状态</span>
@@ -141,6 +141,7 @@ new Vue({
     showLeftMenu: window.innerWidth > 600,
     requireRules: [v => !!v || 'This is required'],
     constantCollection: {
+      user: [{"value": "*", "text": "通配符*"}, {custom: true}],
       group: [{"value": "*", "text": "通配符*"}, {custom: true}],
       role: [{"value": "*", "text": "通配符*"}, {custom: true}],
       resource: [{"value": "*", "text": "通配符*"}, {custom: true}],
@@ -368,7 +369,7 @@ new Vue({
       }
       return _value;
     },
-    onConstantSearch(e, key) {
+    onConstantChange(e, key) {
       let customItem = this.constantCollection[key].find(item => item.custom)
       this.$set(customItem, 'value', e);
       this.$set(customItem, 'text', e);
