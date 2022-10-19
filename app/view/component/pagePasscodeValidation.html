@@ -6,19 +6,17 @@
     <v-card>
       <v-toolbar color="primary title pl-5" dark>页面认证</v-toolbar>
       <v-card-text>
+        <div style="height: 20px;"></div>
         <v-row :class="{'px-10': !isMobile, 'px-3': isMobile, 'pb-7': isMobile}">
           <v-col cols="12" :class="{'pa-0': isMobile, 'px-4': isMobile, 'pt-6': isMobile}">
             <span class="inputLabel">认证码</span>
             <v-text-field class="cus-v-input" dense filled single-line type="password" v-model="passcodeOfUser"></v-text-field>
+            <p style="text-align: right;">认证成功后, {{ validationDurationHour }}小时内无需重复认证。</p>
           </v-col>
-          <v-col cols="12" :class="{'pa-0': isMobile, 'px-4': isMobile, 'pt-6': isMobile}">
-            <span class="inputLabel">认证成功后, {{ validationDurationHour }}小时内无需重复认证。</span>
-          </v-col>
-          
         </v-row>  
       </v-card-text>
       <v-card-actions class="justify-end">
-        <v-btn depressed class="mr-2 primary" @click="passcodeValidation">认证</v-btn>
+        <v-btn depressed class="mr-2 primary" @click="passcodeValidation">确定</v-btn>
       </v-card-actions>
     </v-card>
   </v-dialog>
