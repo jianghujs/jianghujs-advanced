@@ -108,8 +108,7 @@ INSERT INTO `_page` (`id`,`pageId`,`pageName`,`pageFile`,`pageType`,`sort`,`oper
 INSERT INTO `_page` (`id`,`pageId`,`pageName`,`pageFile`,`pageType`,`sort`,`operation`,`operationByUserId`,`operationByUser`,`operationAt`) VALUES (10,'studentManagement','1page_2table_示例1',NULL,'showInMenu','8','insert',NULL,NULL,NULL);
 INSERT INTO `_page` (`id`,`pageId`,`pageName`,`pageFile`,`pageType`,`sort`,`operation`,`operationByUserId`,`operationByUser`,`operationAt`) VALUES (39,'studentcontactManagement','studentcontactManagement页面',NULL,'dynamicInMenu','5','insert',NULL,NULL,NULL);
 INSERT INTO `_page` (`id`,`pageId`,`pageName`,`pageFile`,`pageType`,`sort`,`operation`,`operationByUserId`,`operationByUser`,`operationAt`) VALUES (40,'studentTaskManagement','1page_2table_示例2',NULL,'showInMenu','9','insert',NULL,NULL,NULL);
-INSERT INTO `_page` (`id`, `pageId`, `pageName`, `pageFile`, `pageType`, `sort`, `operation`, `operationByUserId`, `operationByUser`, `operationAt`) VALUES (41, 'pagePasscodeDemo', '二次认证', NULL, 'showInMenu', '5', '123456', 'insert', NULL, NULL);
-
+INSERT INTO `_page` (`id`, `pageId`, `pageName`, `pageFile`, `pageType`, `sort`, `passcode`, `operation`, `operationByUserId`, `operationByUser`, `operationAt`) VALUES (41, 'pagePasscodeDemo', '二次认证', NULL, 'showInMenu', '5', '123456', 'insert', '', NULL, NULL);
 # ------------------------------------------------------------
 # SCHEMA DUMP FOR TABLE: _record_history
 # ------------------------------------------------------------
