@@ -92,7 +92,7 @@ CREATE TABLE `_page` (
   `operationByUser` varchar(255) DEFAULT NULL COMMENT '操作者用户名',
   `operationAt` varchar(255) DEFAULT NULL COMMENT '操作时间; E.g: 2021-05-28T10:24:54+08:00 ',
   PRIMARY KEY (`id`)
-) ENGINE = InnoDB AUTO_INCREMENT = 41 COMMENT = '页面表; 软删除未启用;';
+) ENGINE = InnoDB AUTO_INCREMENT = 42 COMMENT = '页面表; 软删除未启用;';
 
 
 
@@ -107,6 +107,7 @@ INSERT INTO `_page` (`id`,`pageId`,`pageName`,`pageFile`,`pageType`,`sort`,`oper
 INSERT INTO `_page` (`id`,`pageId`,`pageName`,`pageFile`,`pageType`,`sort`,`operation`,`operationByUserId`,`operationByUser`,`operationAt`) VALUES (10,'studentManagement','1page_2table_示例1',NULL,'showInMenu','8','insert',NULL,NULL,NULL);
 INSERT INTO `_page` (`id`,`pageId`,`pageName`,`pageFile`,`pageType`,`sort`,`operation`,`operationByUserId`,`operationByUser`,`operationAt`) VALUES (39,'studentcontactManagement','studentcontactManagement页面',NULL,'dynamicInMenu','5','insert',NULL,NULL,NULL);
 INSERT INTO `_page` (`id`,`pageId`,`pageName`,`pageFile`,`pageType`,`sort`,`operation`,`operationByUserId`,`operationByUser`,`operationAt`) VALUES (40,'studentTaskManagement','1page_2table_示例2',NULL,'showInMenu','9','insert',NULL,NULL,NULL);
+INSERT INTO `_page` (`id`,`pageId`,`pageName`,`pageFile`,`pageType`,`sort`,`operation`,`operationByUserId`,`operationByUser`,`operationAt`) VALUES (41,'pagePasscodeDemo','二次认证',NULL,'showInMenu','5','123456','insert',NULL,NULL);
 
 
 
@@ -155,7 +156,7 @@ CREATE TABLE `_resource` (
   `operationByUser` varchar(255) DEFAULT NULL COMMENT '操作者用户名',
   `operationAt` varchar(255) DEFAULT NULL COMMENT '操作时间; E.g: 2021-05-28T10:24:54+08:00 ',
   PRIMARY KEY (`id`)
-) ENGINE = InnoDB AUTO_INCREMENT = 511 COMMENT = '请求资源表; 软删除未启用; resourceId=`${appId}.${pageId}.${actionId}`';
+) ENGINE = InnoDB AUTO_INCREMENT = 515 COMMENT = '请求资源表; 软删除未启用; resourceId=`${appId}.${pageId}.${actionId}`';
 
 
 
@@ -259,6 +260,10 @@ INSERT INTO `_resource` (`id`,`accessControlTable`,`resourceHook`,`pageId`,`acti
 INSERT INTO `_resource` (`id`,`accessControlTable`,`resourceHook`,`pageId`,`actionId`,`desc`,`resourceType`,`appDataSchema`,`resourceData`,`requestDemo`,`responseDemo`,`operation`,`operationByUserId`,`operationByUser`,`operationAt`) VALUES (506,NULL,NULL,'taskOfStudent','insertItem','✅添加','sql','{}','{ \"table\": \"studenttask\", \"operation\": \"insert\" }','','','update',NULL,NULL,'2022-10-06T13:23:04+08:00');
 INSERT INTO `_resource` (`id`,`accessControlTable`,`resourceHook`,`pageId`,`actionId`,`desc`,`resourceType`,`appDataSchema`,`resourceData`,`requestDemo`,`responseDemo`,`operation`,`operationByUserId`,`operationByUser`,`operationAt`) VALUES (507,NULL,NULL,'taskOfStudent','updateItem','✅更新','sql','{}','{ \"table\": \"studenttask\", \"operation\": \"jhUpdate\" }','','','update',NULL,NULL,'2022-10-06T13:25:20+08:00');
 INSERT INTO `_resource` (`id`,`accessControlTable`,`resourceHook`,`pageId`,`actionId`,`desc`,`resourceType`,`appDataSchema`,`resourceData`,`requestDemo`,`responseDemo`,`operation`,`operationByUserId`,`operationByUser`,`operationAt`) VALUES (508,NULL,NULL,'taskOfStudent','deleteItem','✅删除','sql','{}','{ \"table\": \"studenttask\", \"operation\": \"jhDelete\" }','','','update',NULL,NULL,'2022-10-06T13:22:21+08:00');
+INSERT INTO `_resource` (`id`,`accessControlTable`,`resourceHook`,`pageId`,`actionId`,`desc`,`resourceType`,`appDataSchema`,`resourceData`,`requestDemo`,`responseDemo`,`operation`,`operationByUserId`,`operationByUser`,`operationAt`) VALUES (511,NULL,NULL,'pagePasscodeDemo','selectItemList','✅查询列表','sql','{}','{ \"table\": \"student\", \"operation\": \"select\" }','','','update',NULL,NULL,'2022-10-20T00:10:29+08:00');
+INSERT INTO `_resource` (`id`,`accessControlTable`,`resourceHook`,`pageId`,`actionId`,`desc`,`resourceType`,`appDataSchema`,`resourceData`,`requestDemo`,`responseDemo`,`operation`,`operationByUserId`,`operationByUser`,`operationAt`) VALUES (512,NULL,NULL,'pagePasscodeDemo','insertItem','✅添加','sql','{}','{ \"table\": \"student\", \"operation\": \"insert\" }','','','insert',NULL,NULL,NULL);
+INSERT INTO `_resource` (`id`,`accessControlTable`,`resourceHook`,`pageId`,`actionId`,`desc`,`resourceType`,`appDataSchema`,`resourceData`,`requestDemo`,`responseDemo`,`operation`,`operationByUserId`,`operationByUser`,`operationAt`) VALUES (513,NULL,NULL,'pagePasscodeDemo','updateItem','✅更新','sql','{}','{ \"table\": \"student\", \"operation\": \"jhUpdate\" }','','','insert',NULL,NULL,NULL);
+INSERT INTO `_resource` (`id`,`accessControlTable`,`resourceHook`,`pageId`,`actionId`,`desc`,`resourceType`,`appDataSchema`,`resourceData`,`requestDemo`,`responseDemo`,`operation`,`operationByUserId`,`operationByUser`,`operationAt`) VALUES (514,NULL,NULL,'pagePasscodeDemo','deleteItem','✅删除','sql','{}','{ \"table\": \"student\", \"operation\": \"jhDelete\" }','','','insert',NULL,NULL,NULL);
 
 
 
