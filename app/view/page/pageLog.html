@@ -11,12 +11,12 @@
     <v-row class="ma-0 pa-xs-4 align-center flex-none pt-0 " :class="{'pa-4': !isMobile, 'pb-0': !isMobile, 'pa-2': isMobile}">
 
         <v-col cols="12" xs="4" sm="4" md="4" xl="4" class="pl-0">
-          <v-btn color="success" dark class="elevation-0 mr-2" @click="doUiAction('startCreateItem')">新增</v-btn>
+          <v-select v-model="logFileSelected" :items="constantCollection.logFile" 
+            style="width: 350px; display: inline-block;"
+            prefix="文件:" hide-details dense filled single-line hide-no-data hide-selected />
           <span class="body-2">共{{ tableData.length }}条记录</span>
         </v-col>
-
         <v-spacer></v-spacer>
-
         <v-col cols="12" xs="3" sm="3" md="2" xl="2" class="pa-xs-0 pa-xs-2 col-sm-8-flex">
           <v-text-field v-model="searchInput" label="表格过滤" class="cus-v-input" dense filled single-line></v-text-field>
         </v-col>
@@ -53,11 +53,14 @@ new Vue({
     requireRules: [
       v => !!v || 'This is required',
     ],
-    constantCollection: {},
+    constantCollection: {
+      logFile: [],
+    },
 
-    serverSearchInput: {},
+    logFileSelected: null,
     searchInput: null,
     isTableLoading: true,
+
     tableDataFromBackend: [],
     headers: [
       {text: "访问日期", value: "date", width: 220, class: 'fixed', cellClass: 'fixed'}, 
@@ -79,14 +82,25 @@ new Vue({
       return this.tableDataFromBackend;
     }
   },
-  watch: {},
+  watch: {
+    logFileSelected() {
+      this.doUiAction('refreshTableData');
+    }
+  },
   async created() {
+    await this.doUiAction('selectLogFileList');
+    if (this.constantCollection.logFile.length > 0) {
+      this.logFileSelected = this.constantCollection.logFile[0].filename;
+    }
     await this.doUiAction('refreshTableData');
   },
   mounted() {},
   methods: {
     async doUiAction(uiActionId, uiActionData) {
       switch (uiActionId) {
+        case 'selectLogFileList':
+          await this.selectLogFileList();
+          break;
         case 'refreshTableData':
           await this.refreshTableData();
           break;
@@ -96,19 +110,31 @@ new Vue({
       }
     },
     // =================================uiAction 公共方法 start ======================================
-    /**
-     * uiActionId:  refreshTableData
-     * description: ✅获取表格数据
-    */
+    async selectLogFileList() {
+      this.isTableLoading = true;
+      const result = await window.jianghuAxios({
+        data: {
+          appData: {
+            pageId: 'pageLog',
+            actionId: 'selectLogFileList',
+            actionData: {},
+          }
+        }
+      });
+      const { rows } = result.data.appData.resultData;
+      this.constantCollection.logFile = rows.map(item => {
+        const { filename } = item;
+        return { text: filename, value: filename, filename };
+      });
+    },
     async refreshTableData() {
       this.isTableLoading = true;
       const result = await window.jianghuAxios({
         data: {
           appData: {
             pageId: 'pageLog',
-            actionId: 'selectItemList',
-            actionData: {},
-            where: {}
+            actionId: 'selectItemListFromLogFile',
+            actionData: { logFile: this.logFileSelected },
           }
         }
       });
