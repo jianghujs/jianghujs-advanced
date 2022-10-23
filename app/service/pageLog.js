@@ -30,9 +30,7 @@ class PageLogService extends Service {
     const targetLogFilePath = path.join(baseDir, `/logs/${appId}.page.json.log`);
     let strData = fs.readFileSync(targetLogFilePath, 'UTF-8').toString();
     strData = strData.replace(/"}\n/g, '"},');
-    strData = strData.substring(0, strData.length - 1);
-    const newStrData = '[' + strData  +']';
-    const rows = JSON.parse(newStrData);
+    const rows = eval("[" + strData + "]")
     const newRows = rows.map(row => {
       const { message, ...other } = row;
       const messageObj = eval("(" + message + ")");
