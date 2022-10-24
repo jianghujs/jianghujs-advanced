@@ -4,9 +4,6 @@ const validateUtil = require('@jianghujs/jianghu/app/common/validateUtil');
 const Service = require('egg').Service;
 const path = require('path');
 const fs = require('fs');
-const { tableEnum } = require('../constant/constant');
-const _ = require('lodash');
-const dayjs = require('dayjs');
 
 const actionDataScheme = Object.freeze({
   selectItemListFromLogFile: {
