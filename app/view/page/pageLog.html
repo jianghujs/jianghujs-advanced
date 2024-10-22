@@ -26,7 +26,7 @@
               <v-select prefix="文件" :items="constantObj.logFile" class="jh-v-input" dense single-line filled v-model="serverSearchWhere.logFile"></v-select>
             </v-col>
             <div class="jh-backend-search-btn ml-2">
-              <v-btn class="elevation-0 float-right mt-2 mt-md-0" color="success" small @click="tableOptions.page = 1; doUiAction('getTableData')">
+              <v-btn class="elevation-0 float-right mt-2 mt-sm-0" color="success" small @click="tableOptions.page = 1; doUiAction('getTableData')">
                 查询
               </v-btn>
             </div>
@@ -195,8 +195,8 @@ new Vue({
       this.doUiAction('getTableData');
     },
     logFileSelected() {
-      this.doUiAction('getTableData');
-    },
+          this.doUiAction('getTableData');
+        },
   },
   computed: {
     tableDataComputed() {
@@ -224,16 +224,16 @@ new Vue({
       return tableData;
     },
     isMobile() {
-      return window.innerWidth < 600;
-    },
+          return window.innerWidth < 600;
+        },
   },
   async created() {
-    await this.doUiAction('selectLogFileList');
-    if (this.constantObj.logFile.length > 0) {
-      this.serverSearchWhere.logFile = this.constantObj.logFile[0].filename;
-    }
-    await this.doUiAction('getTableData');
-  },
+        await this.doUiAction('selectLogFileList');
+        if (this.constantObj.logFile.length > 0) {
+          this.serverSearchWhere.logFile = this.constantObj.logFile[0].filename;
+        }
+        await this.doUiAction('getTableData');
+      },
   methods: {
     async doUiAction(uiActionId, uiActionData) {
       try {
@@ -286,6 +286,16 @@ new Vue({
           whereIn[fieldKey] = fieldValue;
         }
       }
+
+      let whereOrOptions = [];
+      if (this.keyword) {
+        if (!this.keywordFieldList || this.keywordFieldList.length === 0) {
+          console.warn('keywordFieldList is empty');
+        }
+        this.keywordFieldList.forEach(fieldKey => {
+          whereOrOptions.push([fieldKey, 'like', '%' + this.keyword.trim() + '%']);
+        });
+      }
       let orderBy = [{column: 'operationAt', order: 'desc'}];
 
       let limit = null;
@@ -301,7 +311,7 @@ new Vue({
       limit = this.tableOptions.itemsPerPage === -1 ? 10000 : this.tableOptions.itemsPerPage;
       offset = (this.tableOptions.page - 1) * limit;
 
-      this.tableParams = { where, whereLike, whereIn, limit, offset, orderBy };
+      this.tableParams = { where, whereLike, whereIn, limit, offset, orderBy, whereOrOptions };
     },
     // 准备请求参数-自定义
     prepareTableParams() {
@@ -339,45 +349,45 @@ new Vue({
     // ---------- 抽屉列表 uiAction >>>>>>>>>>>> --------
     // ---------- Custom uiAction >>>>>>>>>>>> --------
     async selectLogFileList() {
-      this.isTableLoading = true;
-      const result = await window.jianghuAxios({
-        data: {
-          appData: {
-            pageId: 'pageLog',
-            actionId: 'selectLogFileList',
-            actionData: {},
-          }
-        }
-      });
-      const { rows } = result.data.appData.resultData;
-      this.constantObj.logFile = rows.map(item => {
-        const { filename } = item;
-        return { text: filename, value: filename, filename };
-      });
-    },
+          this.isTableLoading = true;
+          const result = await window.jianghuAxios({
+            data: {
+              appData: {
+                pageId: 'pageLog',
+                actionId: 'selectLogFileList',
+                actionData: {},
+              }
+            }
+          });
+          const { rows } = result.data.appData.resultData;
+          this.constantObj.logFile = rows.map(item => {
+            const { filename } = item;
+            return { text: filename, value: filename, filename };
+          });
+        },
     async getTableData() {
-      this.isTableLoading = true;
+          this.isTableLoading = true;
   
-      const result = await window.jianghuAxios({
-        data: {
-          appData: {
-            pageId: 'pageLog',
-            actionId: 'selectItemListFromLogFile',
-            actionData: { logFile: this.serverSearchWhere.logFile },
-          }
-        }
-      });
-      const { rows, count } = result.data.appData.resultData;
-      
-      this.tableOptions.totalCount = count || rows.length;
-      this.tableDataFromBackend = rows;
-      this.isTableLoading = false;
-    },
+          const result = await window.jianghuAxios({
+            data: {
+              appData: {
+                pageId: 'pageLog',
+                actionId: 'selectItemListFromLogFile',
+                actionData: { logFile: this.serverSearchWhere.logFile },
+              }
+            }
+          });
+          const { rows, count } = result.data.appData.resultData;
+          
+          this.tableOptions.totalCount = count || rows.length;
+          this.tableDataFromBackend = rows;
+          this.isTableLoading = false;
+        },
     reloadPage() {
-      //console.log('captured page expire')
-      this.tableDataFromBackend = [];
-      window.location.reload();
-    },
+          //console.log('captured page expire')
+          this.tableDataFromBackend = [];
+          window.location.reload();
+        },
     // ---------- <<<<<<<<<<< Custom uiAction ---------
 
   }

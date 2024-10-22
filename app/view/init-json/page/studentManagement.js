@@ -1,32 +1,59 @@
-{% block htmlHead %}
-{% endblock %}
+const content = {
+  pageType: "jh-page", pageId: "studentManagement", pageName: "1page_2table_示例1", version: 'v2',
+  resourceList: [
+    {
+      actionId: 'selectItemList',
+      resourceType: 'sql',
+      resourceData: {
+        "table": "student",
+        "operation": "select"
+      },
+      resourceHook: null,
+      desc: '✅student查询-查询列表'
+    },
+    {
+      actionId: 'insertItem',
+      resourceType: 'sql',
+      resourceData: {
+        "table": "student",
+        "operation": "jhInsert"
+      },
+      resourceHook: null,
+      desc: '✅student查询-添加成员'
+    },
+    {
+      actionId: 'updateItem',
+      resourceType: 'sql',
+      resourceData: {
+        "table": "student",
+        "operation": "jhUpdate"
+      },
+      resourceHook: null,
+      desc: '✅student查询-更新成员'
+    },
+    {
+      actionId: 'deleteItem',
+      resourceType: 'sql',
+      resourceData: {
+        "table": "student",
+        "operation": "jhDelete"
+      },
+      resourceHook: null,
+      desc: '✅student查询-删除信息'
+    },
 
-{% extends 'template/jhTemplateV4.html'%}
-{% block vueTemplate %}
-<script type="text/html" id="app-template">
-<div>
-<v-app mobile-breakpoint="sm">
-  <jh-menu />
-  <v-main class="mt-13">
-    <!-- 头部内容 >>>>>>>>>>>>> -->
-    <div class="jh-page-second-bar px-3 px-sm-8">
-      <v-row class="align-center" no-gutters>
-        <v-col cols="12" sm="12" md="4" xl="3" :cols="12" :sm="6" :md="4" >
-          <div class="py-4 text-body-1 font-weight-bold align-center d-flex align-center">1page_2table_示例1
-            <!-- 帮助页按钮 -->
-            <v-icon size="15" class="black--text ml-1" @click="isHelpPageDrawerShown = true">mdi-help-circle</v-icon>
-          </div>
-        </v-col>
-          <!-- 自定义搜索内容 -->
-          <v-spacer ></v-spacer>
-      </v-row>
-    </div>
-    <!-- <<<<<<<<<<<<< 头部内容 -->
-    <!-- 页面内容 >>>>>>>>>>>>> -->
-    <div class="jh-page-body-container px-sm-8">
-      <v-row class="pa-0 ma-0">
-        <v-col >
-        
+  ], // { actionId: '', resourceType: '', resourceData: {}, resourceHook: {}, desc: '' }
+  headContent: [
+    { tag: 'jh-page-title', value: "1page_2table_示例1", attrs: { cols: 12, sm: 6, md: 4 }, helpBtn: true, slot: [] },
+    { tag: 'v-spacer' },
+  ],
+  pageContent: [
+    {
+      tag: 'v-col',
+      colAttrs: { clos: 12 },
+      cardAttrs: { class: 'rounded-lg elevation-0' },
+      value: [
+          /*html*/`
 
           <v-card class="rounded-lg">
           <!--表格 头部 >>>>>>>>>>>>> -->
@@ -243,406 +270,252 @@
             <v-icon>mdi-close</v-icon>
           </v-btn>
         </v-navigation-drawer>
-          
-      </v-col>
-      </v-row>
-    </div>
-    <!-- <<<<<<<<<<<<< 页面内容 -->
-    <!-- 组件列表 -->
-    <!-- 帮助页抽屉 >>>>>>>>>>>>> -->
-    <v-navigation-drawer v-if="isHelpPageDrawerLoaded" v-model="isHelpPageDrawerShown" :permanent="isHelpPageDrawerShown" fixed temporary right width="80%" class="elevation-24">
-      <iframe style="border: 0" :src="`/${appInfo.appId}/pageDoc#studentManagement.md`" width="100%" height="100%"></iframe>
-      <v-btn elevation="0" color="success" fab absolute top left small tile class="drawer-close-float-btn" @click="isHelpPageDrawerShown = false">
-          <v-icon>mdi-close</v-icon>
-      </v-btn>
-    </v-navigation-drawer>
-    <!-- <<<<<<<<<<<<< 帮助页抽屉 -->
-  </v-main>
-</v-app>
-
-<jh-toast />
-<jh-mask />
-<jh-confirm-dialog />
-</div>
-</script>
-<div id="app"></div>
-{% endblock %}
-
-{% block vueScript %}
-{% include 'component/contactsOfStudent.html' %}
-{% include 'common/jianghuJs/fixedTableHeightV4.html' %}
-
-<script type="module">
-
-new Vue({
-  el: '#app',
-  template: '#app-template',
-  vuetify: new Vuetify(),
-  data: () => ({
-
-    isMobile: window.innerWidth < 500,
-    isHelpPageDrawerShown: false,
-    isHelpPageDrawerLoaded: false,
-
-    // ================================ common ================================
-    isHelpPageDrawerShown: false,
-    validationRules: {
-      requireRules: [
-        v => !!v || 'This is required'
-      ]
-    },
-    constantObj: {
-      gender: [
-        {
-          value: "male",
-          text: "男"
-        },
-        {
-          value: "female",
-          text: "女"
-        }
+          `
       ],
-      classId: [
-        {
-          value: "2021-01级-01班",
-          text: "2021-01级-01班"
-        },
-        {
-          value: "2021-01级-02班",
-          text: "2021-01级-02班"
-        },
-        {
-          value: "2021-02级-01班",
-          text: "2021-02级-01班"
-        },
-        {
-          value: "2021-02级-02班",
-          text: "2021-02级-02班"
-        },
-        {
-          value: "2021-03级-01班",
-          text: "2021-03级-01班"
-        },
-        {
-          value: "2021-03级-02班",
-          text: "2021-03级-02班"
-        }
+    }
+  ],
+  actionContent: [
+
+  ],
+  includeList: [
+    "{% include 'component/contactsOfStudent.html' %}",
+    "{% include 'common/jianghuJs/fixedTableHeightV4.html' %}",
+  ], // { type: < js | css | html | vueComponent >, path: ''}
+  common: {
+    data: {
+      isHelpPageDrawerShown: false,
+      // 表格相关数据
+
+      validationRules: {
+        requireRules: [
+          v => !!v || 'This is required',
+        ],
+      },
+      constantObj: {
+        gender: [{ "value": "male", "text": "男" }, { "value": "female", "text": "女" }],
+        classId: [
+          { "value": "2021-01级-01班", "text": "2021-01级-01班" }, { "value": "2021-01级-02班", "text": "2021-01级-02班" },
+          { "value": "2021-02级-01班", "text": "2021-02级-01班" }, { "value": "2021-02级-02班", "text": "2021-02级-02班" },
+          { "value": "2021-03级-01班", "text": "2021-03级-01班" }, { "value": "2021-03级-02班", "text": "2021-03级-02班" }
+        ],
+        level: [{ "value": "01", "text": "一年级" }, { "value": "02", "text": "二年级" }, { "value": "03", "text": "三年级" }],
+        studentStatus: [{ "value": "正常", "text": "正常" }, { "value": "退学", "text": "退学" }]
+      },
+      isTableZebraLineShown: true,
+      searchInput: null,
+      isTableLoading: true,
+      tableData: [],
+      headers: [
+        { text: "ID", value: "id", width: 80 },
+        { text: "学生ID", value: "studentId", width: 120 },
+        { text: "学生名字", value: "name", width: 120 },
+        { text: "性别", value: "gender", width: 60 },
+        { text: "出生日期", value: "dateOfBirth", width: 120 },
+        { text: "班级ID", value: "classId", width: 60 },
+        { text: "年级", value: "level", width: 80 },
+        { text: "身高", value: "bodyHeight", width: 60 },
+        { text: "学生状态", value: "studentStatus", width: 80 },
+        { text: "备注", value: "remarks", width: 120 },
+        { text: "操作者", value: "operationByUser", width: 90 },
+        { text: "操作时间", value: "operationAt", width: 150 },
+        { text: '操作', value: 'action', sortable: false, width: 120, class: 'fixed', cellClass: 'fixed' },
       ],
-      level: [
-        {
-          value: "01",
-          text: "一年级"
-        },
-        {
-          value: "02",
-          text: "二年级"
-        },
-        {
-          value: "03",
-          text: "三年级"
-        }
-      ],
-      studentStatus: [
-        {
-          value: "正常",
-          text: "正常"
-        },
-        {
-          value: "退学",
-          text: "退学"
-        }
-      ]
+      // 新增数据
+      isCreateDrawerShown: false,
+      createItem: {},
+      createActionData: {},
+      // 编辑数据
+      isUpdateDrawerShown: false,
+      updateItem: {},
+      updateItemId: null,
+      updateActionData: {},
+      // 删除数据
+      deleteItemId: null,
     },
-    isTableZebraLineShown: true,
-    searchInput: null,
-    isTableLoading: true,
-    tableData: [],
-    headers: [
-      {
-        text: "ID",
-        value: "id",
-        width: 80
-      },
-      {
-        text: "学生ID",
-        value: "studentId",
-        width: 120
-      },
-      {
-        text: "学生名字",
-        value: "name",
-        width: 120
-      },
-      {
-        text: "性别",
-        value: "gender",
-        width: 60
-      },
-      {
-        text: "出生日期",
-        value: "dateOfBirth",
-        width: 120
-      },
-      {
-        text: "班级ID",
-        value: "classId",
-        width: 60
-      },
-      {
-        text: "年级",
-        value: "level",
-        width: 80
-      },
-      {
-        text: "身高",
-        value: "bodyHeight",
-        width: 60
-      },
-      {
-        text: "学生状态",
-        value: "studentStatus",
-        width: 80
-      },
-      {
-        text: "备注",
-        value: "remarks",
-        width: 120
-      },
-      {
-        text: "操作者",
-        value: "operationByUser",
-        width: 90
-      },
-      {
-        text: "操作时间",
-        value: "operationAt",
-        width: 150
-      },
-      {
-        text: "操作",
-        value: "action",
-        sortable: false,
-        width: 120,
-        class: "fixed",
-        cellClass: "fixed"
-      }
-    ],
-    isCreateDrawerShown: false,
-    createItem: {},
-    createActionData: {},
-    isUpdateDrawerShown: false,
-    updateItem: {},
-    updateItemId: null,
-    updateActionData: {},
-    deleteItemId: null,
-
-    // ================================ 其他抽屉列表 ================================
-
-    
-
-
-  }),
-  watch: {
-    isHelpPageDrawerShown(val) {
-      if (val && !this.isHelpPageDrawerLoaded) {
-        this.isHelpPageDrawerLoaded = true;
-      }
+    watch: {},
+    async created() {
+      await this.doUiAction('getTableData');
     },
-  },
-  computed: {
-  },
-  async created() {
-        await this.doUiAction('getTableData');
-      },
-  mounted() {
-      },
-  methods: {
-    async doUiAction(uiActionId, uiActionData) {
-      try {
+    mounted() {
+    },
+    methods: {
+      async doUiAction(uiActionId, uiActionData) {
         switch (uiActionId) {
+          case 'getTableData':
+            await this.getTableData();
+            break;
+          case 'startCreateItem':
+            await this.prepareCreateItem();
+            await this.openCreateItemDrawer();
+            break;
+          case 'createItem':
+            await this.prepareCreateValidate();
+            await this.confirmCreateItemDialog();
+            await this.prepareDoCreateItem();
+            await this.doCreateItem();
+            await this.closeCreateDrawer();
+            await this.getTableData();
+            break;
+          case 'startUpdateItem':
+            await this.prepareUpdateItem(uiActionData);
+            await this.openUpdateDrawer();
+            break;
+          case 'updateItem':
+            await this.prepareUpdateValidate();
+            await this.confirmUpdateItemDialog();
+            await this.prepareDoUpdateItem();
+            await this.doUpdateItem();
+            await this.closeUpdateDrawer();
+            await this.getTableData();
+            break;
+          case 'deleteItem':
+            await this.prepareDeleteItem(uiActionData);
+            await this.confirmDeleteItemDialog();
+            await this.doDeleteItem();
+            await this.getTableData();
+            break;
           default:
-            console.error("[doUiAction] uiActionId not find", {uiActionId});
+            console.error("[doUiAction] uiActionId not find", { uiActionId });
             break;
         }
-      } catch (error) {
-        window.jhMask && window.jhMask.hide();
-        throw error;
-      } finally {
-        window.jhMask && window.jhMask.hide();
-      }
-    },
+      },
+      /**
+       * description: ✅获取表格数据
+       */
+      async getTableData() {
+        this.isTableLoading = true;
+        const rows = (await window.jianghuAxios({
+          data: {
+            appData: {
+              pageId: 'studentManagement',
+              actionId: 'selectItemList',
+              actionData: {},
+              where: {},
+              orderBy: [{ column: 'operationAt', order: 'desc' }]
+            }
+          }
+        })).data.appData.resultData.rows
 
-    // ---------- 抽屉列表 uiAction >>>>>>>>>>>> --------
-    // ---------- Custom uiAction >>>>>>>>>>>> --------
-    async doUiAction(uiActionId, uiActionData) {
-          switch (uiActionId) {
-            case 'getTableData':
-              await this.getTableData();
-              break;
-            case 'startCreateItem':
-              await this.prepareCreateItem();
-              await this.openCreateItemDrawer();
-              break;
-            case 'createItem':
-              await this.prepareCreateValidate();
-              await this.confirmCreateItemDialog();
-              await this.prepareDoCreateItem();
-              await this.doCreateItem();
-              await this.closeCreateDrawer();
-              await this.getTableData();
-              break;
-            case 'startUpdateItem':
-              await this.prepareUpdateItem(uiActionData);
-              await this.openUpdateDrawer();
-              break;
-            case 'updateItem':
-              await this.prepareUpdateValidate();
-              await this.confirmUpdateItemDialog();
-              await this.prepareDoUpdateItem();
-              await this.doUpdateItem();
-              await this.closeUpdateDrawer();
-              await this.getTableData();
-              break;
-            case 'deleteItem':
-              await this.prepareDeleteItem(uiActionData);
-              await this.confirmDeleteItemDialog();
-              await this.doDeleteItem();
-              await this.getTableData();
-              break;
-            default:
-              console.error("[doUiAction] uiActionId not find", { uiActionId });
-              break;
-          }
-        },
-    async getTableData() {
-          this.isTableLoading = true;
-          const rows = (await window.jianghuAxios({
-            data: {
-              appData: {
-                pageId: 'studentManagement',
-                actionId: 'selectItemList',
-                actionData: {},
-                where: {},
-                orderBy: [{ column: 'operationAt', order: 'desc' }]
-              }
+        rows.forEach(row => {
+          row.operationAt = dayjs(row.operationAt).format('YYYY-MM-DD HH:mm:ss');
+        })
+        this.tableData = rows;
+        this.isTableLoading = false;
+      },
+      //   --------------- 新增数据 uiAction >>>>>>>>>>  ---------------
+      async prepareCreateItem() {
+        this.createItem = {};
+      },
+      async openCreateItemDrawer() {
+        this.isCreateDrawerShown = true;
+      },
+      async prepareCreateValidate() {
+        if (await this.$refs.createForm.validate() === false) {
+          throw new Error("[prepareCreateValidate] false");
+        }
+      },
+      async confirmCreateItemDialog() {
+        if (await window.confirmDialog({ title: "新增", content: "确定新增吗？" }) === false) {
+          throw new Error("取消");
+        }
+      },
+      async prepareDoCreateItem() {
+        const { id, ...data } = this.createItem;
+        this.createActionData = data;
+      },
+      async doCreateItem() {
+        await window.vtoast.loading("新增数据");
+        await window.jianghuAxios({
+          data: {
+            appData: {
+              pageId: 'studentManagement',
+              actionId: 'insertItem',
+              actionData: this.createActionData
             }
-          })).data.appData.resultData.rows
-  
-          rows.forEach(row => {
-            row.operationAt = dayjs(row.operationAt).format('YYYY-MM-DD HH:mm:ss');
-          })
-          this.tableData = rows;
-          this.isTableLoading = false;
-        },
-    async prepareCreateItem() {
-          this.createItem = {};
-        },
-    async openCreateItemDrawer() {
-          this.isCreateDrawerShown = true;
-        },
-    async prepareCreateValidate() {
-          if (await this.$refs.createForm.validate() === false) {
-            throw new Error("[prepareCreateValidate] false");
           }
-        },
-    async confirmCreateItemDialog() {
-          if (await window.confirmDialog({ title: "新增", content: "确定新增吗？" }) === false) {
-            throw new Error("取消");
-          }
-        },
-    async prepareDoCreateItem() {
-          const { id, ...data } = this.createItem;
-          this.createActionData = data;
-        },
-    async doCreateItem() {
-          await window.vtoast.loading("新增数据");
-          await window.jianghuAxios({
-            data: {
-              appData: {
-                pageId: 'studentManagement',
-                actionId: 'insertItem',
-                actionData: this.createActionData
-              }
+        })
+        await window.vtoast.success("新增数据成功");
+      },
+      async closeCreateDrawer() {
+        this.createItem = {};
+        this.createActionData = null;
+        this.isCreateDrawerShown = false;
+      },
+      //   --------------- <<<<<<<<<<<< 新增数据 uiAction  ---------------
+      //   --------------- 编辑数据 uiAction >>>>>>>>>>>>  ---------------
+      async prepareUpdateItem(funObj) {
+        this.updateItem = _.cloneDeep(funObj);
+      },
+      async openUpdateDrawer() {
+        this.isUpdateDrawerShown = true;
+      },
+      async prepareUpdateValidate() {
+        if (await this.$refs.updateForm.validate() === false) {
+          throw new Error("[prepareUpdateValidate] false");
+        }
+      },
+      async confirmUpdateItemDialog() {
+        if (await window.confirmDialog({ title: "修改", content: "确定修改吗？" }) === false) {
+          throw new Error("取消");
+        }
+      },
+      prepareDoUpdateItem() {
+        const { id, userId, ...data } = this.updateItem;
+        this.updateItemId = id;
+        this.updateActionData = data;
+      },
+      async doUpdateItem() {
+        await window.vtoast.loading("保存中");
+        await window.jianghuAxios({
+          data: {
+            appData: {
+              pageId: 'studentManagement',
+              actionId: 'updateItem',
+              actionData: this.updateActionData,
+              where: { id: this.updateItemId }
             }
-          })
-          await window.vtoast.success("新增数据成功");
-        },
-    async closeCreateDrawer() {
-          this.createItem = {};
-          this.createActionData = null;
-          this.isCreateDrawerShown = false;
-        },
-    async prepareUpdateItem(funObj) {
-          this.updateItem = _.cloneDeep(funObj);
-        },
-    async openUpdateDrawer() {
-          this.isUpdateDrawerShown = true;
-        },
-    async prepareUpdateValidate() {
-          if (await this.$refs.updateForm.validate() === false) {
-            throw new Error("[prepareUpdateValidate] false");
           }
-        },
-    async confirmUpdateItemDialog() {
-          if (await window.confirmDialog({ title: "修改", content: "确定修改吗？" }) === false) {
-            throw new Error("取消");
-          }
-        },
-    prepareDoUpdateItem() {
-          const { id, userId, ...data } = this.updateItem;
-          this.updateItemId = id;
-          this.updateActionData = data;
-        },
-    async doUpdateItem() {
-          await window.vtoast.loading("保存中");
-          await window.jianghuAxios({
-            data: {
-              appData: {
-                pageId: 'studentManagement',
-                actionId: 'updateItem',
-                actionData: this.updateActionData,
-                where: { id: this.updateItemId }
-              }
+        });
+        await window.vtoast.success("修改成功");
+      },
+      async closeUpdateDrawer() {
+        this.isUpdateDrawerShown = false;
+        this.updateItem = {};
+        this.updateActionData = null;
+        this.updateItemId = null;
+      },
+      //   --------------- <<<<<<<<<<<< 编辑数据 uiAction  ---------------
+      // ---------------删除数据 uiAction >>>>>>>>>>>>> ---------------
+      async prepareDeleteItem(funObj) {
+        this.deleteItemId = funObj.id;
+      },
+      async confirmDeleteItemDialog() {
+        if (await window.confirmDialog({ title: "删除", content: "确定删除吗？" }) === false) {
+          throw new Error("取消");
+        }
+      },
+      async doDeleteItem(funObj) {
+        await window.vtoast.loading("删除数据");
+        await window.jianghuAxios({
+          data: {
+            appData: {
+              pageId: 'studentManagement',
+              actionId: 'deleteItem',
+              actionData: {},
+              where: { id: this.deleteItemId }
             }
-          });
-          await window.vtoast.success("修改成功");
-        },
-    async closeUpdateDrawer() {
-          this.isUpdateDrawerShown = false;
-          this.updateItem = {};
-          this.updateActionData = null;
-          this.updateItemId = null;
-        },
-    async prepareDeleteItem(funObj) {
-          this.deleteItemId = funObj.id;
-        },
-    async confirmDeleteItemDialog() {
-          if (await window.confirmDialog({ title: "删除", content: "确定删除吗？" }) === false) {
-            throw new Error("取消");
           }
-        },
-    async doDeleteItem(funObj) {
-          await window.vtoast.loading("删除数据");
-          await window.jianghuAxios({
-            data: {
-              appData: {
-                pageId: 'studentManagement',
-                actionId: 'deleteItem',
-                actionData: {},
-                where: { id: this.deleteItemId }
-              }
-            }
-          });
-          await window.vtoast.success("删除数据成功");
-          this.deleteItemId = null;
-        },
-    // ---------- <<<<<<<<<<< Custom uiAction ---------
+        });
+        await window.vtoast.success("删除数据成功");
+        this.deleteItemId = null;
+      },
+      // ---------------<<<<<<<<<<<<< 删除数据 uiAction ---------------
 
-  }
-})
-</script>
+    }
+  },
+  style: `
+  `
 
-<style scoped>
-  
-  
-</style>{% endblock %}
+};
+
+module.exports = content;

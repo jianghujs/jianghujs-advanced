@@ -416,13 +416,13 @@ new Vue({
       return tableData;
     },
     isMobile() {
-      return window.innerWidth < 600;
-    },
+          return window.innerWidth < 600;
+        },
   },
   async created() {
-    await this.doUiAction('getTableData');
-    await this.doUiAction('startPageValidation');
-  },
+        await this.doUiAction('getTableData');
+        await this.doUiAction('startPageValidation');
+      },
   methods: {
     async doUiAction(uiActionId, uiActionData) {
       try {
@@ -508,6 +508,16 @@ new Vue({
           whereIn[fieldKey] = fieldValue;
         }
       }
+
+      let whereOrOptions = [];
+      if (this.keyword) {
+        if (!this.keywordFieldList || this.keywordFieldList.length === 0) {
+          console.warn('keywordFieldList is empty');
+        }
+        this.keywordFieldList.forEach(fieldKey => {
+          whereOrOptions.push([fieldKey, 'like', '%' + this.keyword.trim() + '%']);
+        });
+      }
       let orderBy = [{column: 'operationAt', order: 'desc'}];
 
       let limit = null;
@@ -523,7 +533,7 @@ new Vue({
       limit = this.tableOptions.itemsPerPage === -1 ? 10000 : this.tableOptions.itemsPerPage;
       offset = (this.tableOptions.page - 1) * limit;
 
-      this.tableParams = { where, whereLike, whereIn, limit, offset, orderBy };
+      this.tableParams = { where, whereLike, whereIn, limit, offset, orderBy, whereOrOptions };
     },
     // 准备请求参数-自定义
     prepareTableParams() {
@@ -676,67 +686,67 @@ new Vue({
     // ---------- 抽屉列表 uiAction >>>>>>>>>>>> --------
     // ---------- Custom uiAction >>>>>>>>>>>> --------
     async preparePageValidationData() {
-      const urlPathList = window.location.pathname.split('/');
-      this.pageId = urlPathList && urlPathList[urlPathList.length - 1];
-    },
+          const urlPathList = window.location.pathname.split('/');
+          this.pageId = urlPathList && urlPathList[urlPathList.length - 1];
+        },
     checkAndOpenPageValidationDialog() {
-      if (!this.passcodeOfServer) {
-        this.isPageValidationDialogShown = false
-        return;
-      }
-      const pageValidation = this.getPageValidationCache({pageId: this.pageId});
-      const {date, success} = pageValidation;
-      let duration = 999999;
-      try {
-        duration = dayjs().diff(date, 'hour');
-        // duration = dayjs().diff(date, 'minute');
-        // duration = dayjs().diff(date, 'second');
-      } catch (error) {
-        console.error("[created]", "date 解析异常");
-      }
-      if (success === true && duration < this.validationDurationHour) {
-        this.isPageValidationDialogShown = false;
-        return;
-      }
-      this.isPageValidationDialogShown = true
-    },
-    getPageValidationCache({pageId}) {
-      let pageValidationObj = {}
-      try {
-        const pageValidationObjStr = localStorage.getItem(`${window.appInfo.appId}_page_validation_obj`);
-        pageValidationObj = JSON.parse(pageValidationObjStr || '{}');
-      } catch (error) {
-        console.error("[getPageValidationCache]", "json 数据异常");
-      }
-      return pageValidationObj[pageId] || {};
-    },
-    cachePageValidation({pageId, value}) {
-      let pageValidationObj = {}
-      try {
-        const pageValidationObjStr = localStorage.getItem(`${window.appInfo.appId}_page_validation_obj`);
-        pageValidationObj = JSON.parse(pageValidationObjStr || '{}');
-      } catch (error) {
-        console.error("[cachePageValidation]", "json 数据异常");
-      }
-      pageValidationObj[pageId] = value;
-      localStorage.setItem(`${window.appInfo.appId}_page_validation_obj`, JSON.stringify(pageValidationObj));
-    },
-    doPageValidation() {
-      if (this.passcodeOfUser !== this.passcodeOfServer) {
-        window.vtoast.fail({message: '页面认证失败'});
-      }
-      if (this.passcodeOfUser === this.passcodeOfServer) {
-        this.cachePageValidation({
-          pageId: this.pageId,
-          value: {
-            pageId: this.pageId,
-            date: dayjs(),
-            success: true,
+          if (!this.passcodeOfServer) {
+            this.isPageValidationDialogShown = false
+            return;
           }
-        });
-        this.isPageValidationDialogShown = false;
-      }
-    },
+          const pageValidation = this.getPageValidationCache({pageId: this.pageId});
+          const {date, success} = pageValidation;
+          let duration = 999999;
+          try {
+            duration = dayjs().diff(date, 'hour');
+            // duration = dayjs().diff(date, 'minute');
+            // duration = dayjs().diff(date, 'second');
+          } catch (error) {
+            console.error("[created]", "date 解析异常");
+          }
+          if (success === true && duration < this.validationDurationHour) {
+            this.isPageValidationDialogShown = false;
+            return;
+          }
+          this.isPageValidationDialogShown = true
+        },
+    getPageValidationCache({pageId}) {
+          let pageValidationObj = {}
+          try {
+            const pageValidationObjStr = localStorage.getItem(`${window.appInfo.appId}_page_validation_obj`);
+            pageValidationObj = JSON.parse(pageValidationObjStr || '{}');
+          } catch (error) {
+            console.error("[getPageValidationCache]", "json 数据异常");
+          }
+          return pageValidationObj[pageId] || {};
+        },
+    cachePageValidation({pageId, value}) {
+          let pageValidationObj = {}
+          try {
+            const pageValidationObjStr = localStorage.getItem(`${window.appInfo.appId}_page_validation_obj`);
+            pageValidationObj = JSON.parse(pageValidationObjStr || '{}');
+          } catch (error) {
+            console.error("[cachePageValidation]", "json 数据异常");
+          }
+          pageValidationObj[pageId] = value;
+          localStorage.setItem(`${window.appInfo.appId}_page_validation_obj`, JSON.stringify(pageValidationObj));
+        },
+    doPageValidation() {
+          if (this.passcodeOfUser !== this.passcodeOfServer) {
+            window.vtoast.fail({message: '页面认证失败'});
+          }
+          if (this.passcodeOfUser === this.passcodeOfServer) {
+            this.cachePageValidation({
+              pageId: this.pageId,
+              value: {
+                pageId: this.pageId,
+                date: dayjs(),
+                success: true,
+              }
+            });
+            this.isPageValidationDialogShown = false;
+          }
+        },
     // ---------- <<<<<<<<<<< Custom uiAction ---------
 
   }

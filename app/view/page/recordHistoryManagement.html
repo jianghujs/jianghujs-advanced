@@ -29,7 +29,7 @@
               <v-select prefix="数据类型：" class="jh-v-input bg-white" :items="constantObj.dataType" dense single-line filled v-model="serverSearchInput.dataType"></v-select>
             </v-col>
             <div class="jh-backend-search-btn ml-2">
-              <v-btn class="elevation-0 float-right mt-2 mt-md-0" color="success" small @click="doUiAction('getTableData')">
+              <v-btn class="elevation-0 float-right mt-2 mt-sm-0" color="success" small @click="doUiAction('getTableData')">
                 查询
               </v-btn>
             </div>
@@ -327,23 +327,23 @@ new Vue({
       return tableData;
     },
     tableDataComputed() {
-      if(this.filterMap) {
-        return this.tableData.filter(row => {
-          for (const key in this.filterMap) {
-            if (this.filterMap[key] && row[key] !== this.filterMap[key]) {
-              return false;
-            }
+          if(this.filterMap) {
+            return this.tableData.filter(row => {
+              for (const key in this.filterMap) {
+                if (this.filterMap[key] && row[key] !== this.filterMap[key]) {
+                  return false;
+                }
+              }
+              return true;
+            });
+          } else {
+            return this.tableData;
           }
-          return true;
-        });
-      } else {
-        return this.tableData;
-      }
-    },
+        },
   },
   async created() {
-    this.doUiAction('initTableData');
-  },
+        this.doUiAction('initTableData');
+      },
   methods: {
     async doUiAction(uiActionId, uiActionData) {
       try {
@@ -419,12 +419,22 @@ new Vue({
           whereIn[fieldKey] = fieldValue;
         }
       }
+
+      let whereOrOptions = [];
+      if (this.keyword) {
+        if (!this.keywordFieldList || this.keywordFieldList.length === 0) {
+          console.warn('keywordFieldList is empty');
+        }
+        this.keywordFieldList.forEach(fieldKey => {
+          whereOrOptions.push([fieldKey, 'like', '%' + this.keyword.trim() + '%']);
+        });
+      }
       let orderBy = [{column: 'operationAt', order: 'desc'}];
 
       let limit = null;
       let offset = null;
 
-      this.tableParams = { where, whereLike, whereIn, limit, offset, orderBy };
+      this.tableParams = { where, whereLike, whereIn, limit, offset, orderBy, whereOrOptions };
     },
     // 准备请求参数-自定义
     prepareTableParams() {
@@ -474,112 +484,112 @@ new Vue({
     },
     // ---------- Custom uiAction >>>>>>>>>>>> --------
     prepareTableParams() {
-      // TODO 增加自定义复杂判断条件
-      const backendSearchData = _.pickBy(this.serverSearchInput, value => !!value && value !== '全部');
-      if (backendSearchData.dataType === 'onUse') {
-        this.recordHistoryActionId = 'selectOnUseItemListByTable';
-      }
-      if (backendSearchData.dataType === 'deleted') {
-        this.recordHistoryActionId = 'selectDeletedItemListByTable';
-      }
-      this.currentTable = backendSearchData.table;
-    },
+          // TODO 增加自定义复杂判断条件
+          const backendSearchData = _.pickBy(this.serverSearchInput, value => !!value && value !== '全部');
+          if (backendSearchData.dataType === 'onUse') {
+            this.recordHistoryActionId = 'selectOnUseItemListByTable';
+          }
+          if (backendSearchData.dataType === 'deleted') {
+            this.recordHistoryActionId = 'selectDeletedItemListByTable';
+          }
+          this.currentTable = backendSearchData.table;
+        },
     async getTableData() {
-      this.isTableLoading = true;
-      const result = await window.jianghuAxios({
-        data: {
-          appData: {
-            pageId: 'recordHistoryManagement',
-            actionId: this.recordHistoryActionId,
-            actionData: {
-              table: this.currentTable
+          this.isTableLoading = true;
+          const result = await window.jianghuAxios({
+            data: {
+              appData: {
+                pageId: 'recordHistoryManagement',
+                actionId: this.recordHistoryActionId,
+                actionData: {
+                  table: this.currentTable
+                }
+              }
             }
-          }
-        }
-      });
-      this.tableDataFromBackend = result.data.appData.resultData.rows;
-      this.isTableLoading = false;
-    },
+          });
+          this.tableDataFromBackend = result.data.appData.resultData.rows;
+          this.isTableLoading = false;
+        },
     setSearchSummary(){
-      const conditions = [];
-      if (this.serverSearchInput.table) {
-        conditions.push(`数据表为【${getDisplayText({displayObj: this.constantObj.table, displayValue: this.serverSearchInput.table})}】`);
-      }
-      if (this.serverSearchInput.dataType) {
-        conditions.push(`数据类型为【${getDisplayText({displayObj: this.constantObj.dataType, displayValue: this.serverSearchInput.dataType})}】`);
-      }
-      this.searchSummary = conditions.length > 0  ? `${conditions.join('，')}，共${this.tableData.length}条记录` : `共${this.tableData.length}条记录`;
-    },
+          const conditions = [];
+          if (this.serverSearchInput.table) {
+            conditions.push(`数据表为【${getDisplayText({displayObj: this.constantObj.table, displayValue: this.serverSearchInput.table})}】`);
+          }
+          if (this.serverSearchInput.dataType) {
+            conditions.push(`数据类型为【${getDisplayText({displayObj: this.constantObj.dataType, displayValue: this.serverSearchInput.dataType})}】`);
+          }
+          this.searchSummary = conditions.length > 0  ? `${conditions.join('，')}，共${this.tableData.length}条记录` : `共${this.tableData.length}条记录`;
+        },
     computeHeader() {
-      if (this.tableData.length > 0) {
-        const headers = this.defaultHeaders.slice();
-        const recordData = this.tableData[0];
-        for (const key in recordData) {
-          if (['id', 'count', 'recordHistoryId', 'operation', 'operationByUserId', 'operationByUser', 'operationAt'].indexOf(key) > -1) {
-            continue;
-          }
-          headers.push({text: key, value: key, width: 120});
-        }
-        headers.push({text: '操作', value: 'action', align: 'left', sortable: false, width: 140, class: 'fixed', cellClass: 'fixed'});
-        this.headers = headers;
-      }
-    },
-    async prepareRecordHistoryItem(funObj) {
-      this.recordHistoryDetailListBackend = [];
-      this.recordHistoryDetailList = [];
-      this.currentRecordId = funObj.id;
-    },
-    async doGetRecordHistoryDetail() {
-      this.isDrawerTableLoading = true;
-      this.recordHistoryDetailListBackend = (await window.jianghuAxios({
-        data: {
-          appData: {
-            pageId: 'recordHistoryManagement',
-            actionId: 'selectItemList',
-            where: {
-              recordId: this.currentRecordId,
-              table: this.currentTable
-            },
-            orderBy: [{column: 'id', order: 'desc'}]
-          }
-        }
-      })).data.appData.resultData.rows;
-    },
-    async decodeRecordHistoryDetail() {
-      // 数据的格式转换
-      const rows = this.recordHistoryDetailListBackend.map(row => {
-        const {recordContent, id: recordHistoryId} = row;
-        let record = {};
-        try {
-          record = JSON.parse(recordContent);
-        } catch (err) {
-          console.error('[JSON pare error]', err);
-        }
-        record.recordHistoryId = recordHistoryId;
-        return record;
-      })
-      this.recordHistoryDetailList = rows;
-      this.isDrawerTableLoading = false;
-    },
-    async prepareRestoreItem(funObj) {
-      this.restoreId = funObj.recordHistoryId;
-    },
-    async doRestoreRecordByRecordHistory() {
-      window.vtoast.loading(`${this.currentTable}【${this.restoreId}】数据还原`);
-      await window.jianghuAxios({
-        data: {
-          appData: {
-            pageId: 'recordHistoryManagement',
-            actionId: 'restoreRecordByRecordHistory',
-            actionData: {
-              recordHistoryId: this.restoreId
+          if (this.tableData.length > 0) {
+            const headers = this.defaultHeaders.slice();
+            const recordData = this.tableData[0];
+            for (const key in recordData) {
+              if (['id', 'count', 'recordHistoryId', 'operation', 'operationByUserId', 'operationByUser', 'operationAt'].indexOf(key) > -1) {
+                continue;
+              }
+              headers.push({text: key, value: key, width: 120});
             }
+            headers.push({text: '操作', value: 'action', align: 'left', sortable: false, width: 140, class: 'fixed', cellClass: 'fixed'});
+            this.headers = headers;
           }
-        }
-      });
-      window.vtoast.success(`${this.currentTable}【${this.restoreId}】数据还原成功`);
-      this.restoreId = null;
-    },
+        },
+    async prepareRecordHistoryItem(funObj) {
+          this.recordHistoryDetailListBackend = [];
+          this.recordHistoryDetailList = [];
+          this.currentRecordId = funObj.id;
+        },
+    async doGetRecordHistoryDetail() {
+          this.isDrawerTableLoading = true;
+          this.recordHistoryDetailListBackend = (await window.jianghuAxios({
+            data: {
+              appData: {
+                pageId: 'recordHistoryManagement',
+                actionId: 'selectItemList',
+                where: {
+                  recordId: this.currentRecordId,
+                  table: this.currentTable
+                },
+                orderBy: [{column: 'id', order: 'desc'}]
+              }
+            }
+          })).data.appData.resultData.rows;
+        },
+    async decodeRecordHistoryDetail() {
+          // 数据的格式转换
+          const rows = this.recordHistoryDetailListBackend.map(row => {
+            const {recordContent, id: recordHistoryId} = row;
+            let record = {};
+            try {
+              record = JSON.parse(recordContent);
+            } catch (err) {
+              console.error('[JSON pare error]', err);
+            }
+            record.recordHistoryId = recordHistoryId;
+            return record;
+          })
+          this.recordHistoryDetailList = rows;
+          this.isDrawerTableLoading = false;
+        },
+    async prepareRestoreItem(funObj) {
+          this.restoreId = funObj.recordHistoryId;
+        },
+    async doRestoreRecordByRecordHistory() {
+          window.vtoast.loading(`${this.currentTable}【${this.restoreId}】数据还原`);
+          await window.jianghuAxios({
+            data: {
+              appData: {
+                pageId: 'recordHistoryManagement',
+                actionId: 'restoreRecordByRecordHistory',
+                actionData: {
+                  recordHistoryId: this.restoreId
+                }
+              }
+            }
+          });
+          window.vtoast.success(`${this.currentTable}【${this.restoreId}】数据还原成功`);
+          this.restoreId = null;
+        },
     // ---------- <<<<<<<<<<< Custom uiAction ---------
 
   }

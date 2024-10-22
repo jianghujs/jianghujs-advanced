@@ -400,19 +400,19 @@ new Vue({
       return tableData;
     },
     tableDataComputed() {
-      if(this.filterMap) {
-        return this.tableData.filter(row => {
-          for (const key in this.filterMap) {
-            if (this.filterMap[key] && row[key] !== this.filterMap[key]) {
-              return false;
-            }
+          if(this.filterMap) {
+            return this.tableData.filter(row => {
+              for (const key in this.filterMap) {
+                if (this.filterMap[key] && row[key] !== this.filterMap[key]) {
+                  return false;
+                }
+              }
+              return true;
+            });
+          } else {
+            return this.tableData;
           }
-          return true;
-        });
-      } else {
-        return this.tableData;
-      }
-    },
+        },
   },
   async created() {
     this.doUiAction('getTableData');
@@ -524,12 +524,22 @@ new Vue({
           whereIn[fieldKey] = fieldValue;
         }
       }
+
+      let whereOrOptions = [];
+      if (this.keyword) {
+        if (!this.keywordFieldList || this.keywordFieldList.length === 0) {
+          console.warn('keywordFieldList is empty');
+        }
+        this.keywordFieldList.forEach(fieldKey => {
+          whereOrOptions.push([fieldKey, 'like', '%' + this.keyword.trim() + '%']);
+        });
+      }
       let orderBy = [{column: 'operationAt', order: 'desc'}];
 
       let limit = null;
       let offset = null;
 
-      this.tableParams = { where, whereLike, whereIn, limit, offset, orderBy };
+      this.tableParams = { where, whereLike, whereIn, limit, offset, orderBy, whereOrOptions };
     },
     // 准备请求参数-自定义
     prepareTableParams() {
@@ -694,104 +704,104 @@ new Vue({
     },
     // ---------- Custom uiAction >>>>>>>>>>>> --------
     async prepareActiveUserItem(funObj) {
-      this.activeUserItem = _.cloneDeep(funObj);
-    },
+          this.activeUserItem = _.cloneDeep(funObj);
+        },
     async confirmActiveUserStatusDialog() {
-      if (await window.confirmDialog({title: "激活", content: "确定激活吗？"}) === false) {
-        throw new Error("[confirmActiveUserStatusDialog] 否");
-      }
-    },
+          if (await window.confirmDialog({title: "激活", content: "确定激活吗？"}) === false) {
+            throw new Error("[confirmActiveUserStatusDialog] 否");
+          }
+        },
     async prepareDoActiveUserStatus() {
-      this.activeUserId = this.activeUserItem.userId;
-    },
+          this.activeUserId = this.activeUserItem.userId;
+        },
     async doActiveUser() {
-      await window.vtoast.loading('正在激活');
-      await window.jianghuAxios({
-        data: {
-          appData: {
-            pageId: 'userManagement',
-            actionId: 'updateItem',
-            actionData: {userStatus: 'active'},
-            where: {userId: this.activeUserId}
-          }
-        }
-      });
-      await window.vtoast.success(`激活成功`);
-      this.activeUserItem = {};
-      this.activeUserId = null;
-    },
+          await window.vtoast.loading('正在激活');
+          await window.jianghuAxios({
+            data: {
+              appData: {
+                pageId: 'userManagement',
+                actionId: 'updateItem',
+                actionData: {userStatus: 'active'},
+                where: {userId: this.activeUserId}
+              }
+            }
+          });
+          await window.vtoast.success(`激活成功`);
+          this.activeUserItem = {};
+          this.activeUserId = null;
+        },
     async prepareBannedUserItem(funObj) {
-      this.bannedUserItem = _.cloneDeep(funObj);
-    },
+          this.bannedUserItem = _.cloneDeep(funObj);
+        },
     async confirmBannedUserStatusDialog() {
-      if (await window.confirmDialog({title: "禁用", content: "确定禁用吗？"}) === false) {
-        throw new Error("[confirmBannedUserStatusDialog] 否");
-      }
-    },
+          if (await window.confirmDialog({title: "禁用", content: "确定禁用吗？"}) === false) {
+            throw new Error("[confirmBannedUserStatusDialog] 否");
+          }
+        },
     async prepareDoBannedUserStatus() {
-      this.bannedUserId = this.bannedUserItem.userId;
-    },
+          this.bannedUserId = this.bannedUserItem.userId;
+        },
     async doBannedUser(funObj) {
-      await window.vtoast.loading('正在禁用');
-      await window.jianghuAxios({
-        data: {
-          appData: {
-            pageId: 'userManagement',
-            actionId: 'updateItem',
-            actionData: {userStatus: 'banned'},
-            where: {userId: this.bannedUserId}
-          }
-        }
-      });
-      await window.vtoast.success(`禁用成功`);
-      this.bannedUserItem = {};
-      this.bannedUserId = null;
-    },
+          await window.vtoast.loading('正在禁用');
+          await window.jianghuAxios({
+            data: {
+              appData: {
+                pageId: 'userManagement',
+                actionId: 'updateItem',
+                actionData: {userStatus: 'banned'},
+                where: {userId: this.bannedUserId}
+              }
+            }
+          });
+          await window.vtoast.success(`禁用成功`);
+          this.bannedUserItem = {};
+          this.bannedUserId = null;
+        },
     async prepareResetPasswordItem(funObj) {
-      this.userPasswordItem = _.cloneDeep(funObj);
-    },
+          this.userPasswordItem = _.cloneDeep(funObj);
+        },
     async openResetPasswordDrawer() {
-      this.isResetUserPasswordDrawerShown = true;
-    },
+          this.isResetUserPasswordDrawerShown = true;
+        },
     async prepareResetPasswordValidate() {
-      if (await this.$refs.passwordForm.validate() === false) {
-        throw new Error("[prepareResetPasswordValidate] false");
-      }
-    },
-    async confirmResetPasswordDialog() {
-      if (await window.confirmDialog({title: "修改用户密码", content: "确定修改用户密码吗？"}) === false) {
-        throw new Error("[confirmResetPasswordDialog] 否");
-      }
-    },
-    async prepareDoResetPasswordItem() {
-      const {userId, clearTextPassword} = this.userPasswordItem;
-      this.clearTextPassword = clearTextPassword;
-      this.resetPasswordUserId = userId;
-    },
-    async doResetPasswordItem() {
-      await window.vtoast.loading("修改密码");
-      await window.jianghuAxios({
-        data: {
-          appData: {
-            pageId: 'userManagement',
-            actionId: 'resetUserPassword',
-            actionData: {userId: this.resetPasswordUserId, clearTextPassword: this.clearTextPassword},
-            where: {}
+          if (await this.$refs.passwordForm.validate() === false) {
+            throw new Error("[prepareResetPasswordValidate] false");
           }
-        }
-      });
-      window.vtoast.success("修改密码成功");
-    },
+        },
+    async confirmResetPasswordDialog() {
+          if (await window.confirmDialog({title: "修改用户密码", content: "确定修改用户密码吗？"}) === false) {
+            throw new Error("[confirmResetPasswordDialog] 否");
+          }
+        },
+    async prepareDoResetPasswordItem() {
+          const {userId, clearTextPassword} = this.userPasswordItem;
+          this.clearTextPassword = clearTextPassword;
+          this.resetPasswordUserId = userId;
+        },
+    async doResetPasswordItem() {
+          await window.vtoast.loading("修改密码");
+          await window.jianghuAxios({
+            data: {
+              appData: {
+                pageId: 'userManagement',
+                actionId: 'resetUserPassword',
+                actionData: {userId: this.resetPasswordUserId, clearTextPassword: this.clearTextPassword},
+                where: {}
+              }
+            }
+          });
+          window.vtoast.success("修改密码成功");
+        },
     async closeResetPasswordDrawer() {
-      this.isResetUserPasswordDrawerShown = false;
-      this.userPasswordItem = {};
-      this.clearTextPassword = null;
-      this.resetPasswordUserId = null;
-    },
+          this.isResetUserPasswordDrawerShown = false;
+          this.userPasswordItem = {};
+          this.clearTextPassword = null;
+          this.resetPasswordUserId = null;
+        },
     async copyPassword(funObj) {
-      await navigator.clipboard.writeText(funObj.clearTextPassword);
-      return window.vtoast.success("复制密码成功！")
-    },
+          await navigator.clipboard.writeText(funObj.clearTextPassword);
+          return window.vtoast.success("复制密码成功！")
+        },
     // ---------- <<<<<<<<<<< Custom uiAction ---------
 
   }

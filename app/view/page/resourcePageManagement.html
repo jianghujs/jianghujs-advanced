@@ -135,7 +135,7 @@
         <!-- 抽屉内容 -->
 
             <!-- 抽屉内容form -->
-            <v-row class="mt-0 px-4 pb-4" >
+            <v-row class="mt-0 px-4 pb-4">
               <v-col cols="12" sm="12" md="3" v-if="dataTypeSwitch == 0">
                 <span class="jh-input-label"><span class="red--text text--accent-2 ml-1">* </span>page id</span>
                 <v-text-field class="jh-v-input" dense single-line filled v-model="createItem.pageId" :rules="validationRules.requireRules"></v-text-field>
@@ -228,7 +228,7 @@
         <!-- 抽屉内容 -->
 
             <!-- 抽屉内容form -->
-            <v-row class="mt-0 px-4 pb-4" >
+            <v-row class="mt-0 px-4 pb-4">
               <v-col cols="12" sm="12" md="3" v-if="dataTypeSwitch == 0">
                 <span class="jh-input-label"><span class="red--text text--accent-2 ml-1">* </span>page id</span>
                 <v-text-field class="jh-v-input" dense single-line filled v-model="updateItem.pageId" :rules="validationRules.requireRules"></v-text-field>
@@ -321,7 +321,7 @@
         <!-- 抽屉内容 -->
 
             <!-- 抽屉内容form -->
-            <v-row class="mt-0 px-4 pb-4" >
+            <v-row class="mt-0 px-4 pb-4">
               <v-col cols="12" sm="12" md="3" >
                 <span class="jh-input-label"><span class="red--text text--accent-2 ml-1">* </span>新密码</span>
                 <v-text-field class="jh-v-input" dense single-line filled v-model="resetUserPasswordItem.clearTextPassword" :rules="validationRules.requireRules"></v-text-field>
@@ -584,17 +584,17 @@ new Vue({
       }
     },
     dataTypeSwitch(value) {
-      this.tableData = [];
-      if (value === 0) {
-        this.pageId = 'Resource'
-        this.tabPageHeaders = this.resourceHeaders;
-      }
-      if (value === 1) {
-        this.pageId = 'Page'
-        this.tabPageHeaders = this.pageHeaders;
-      }
-      this.doUiAction('getTableData');
-    },
+          this.tableData = [];
+          if (value === 0) {
+            this.pageId = 'Resource'
+            this.tabPageHeaders = this.resourceHeaders;
+          }
+          if (value === 1) {
+            this.pageId = 'Page'
+            this.tabPageHeaders = this.pageHeaders;
+          }
+          this.doUiAction('getTableData');
+        },
   },
   computed: {
     tableDataComputed() {
@@ -614,26 +614,26 @@ new Vue({
       return tableData;
     },
     tableDataComputed() {
-      if(this.filterMap) {
-        return this.tableData.filter(row => {
-          for (const key in this.filterMap) {
-            if (this.filterMap[key] && row[key] !== this.filterMap[key]) {
-              return false;
-            }
+          if(this.filterMap) {
+            return this.tableData.filter(row => {
+              for (const key in this.filterMap) {
+                if (this.filterMap[key] && row[key] !== this.filterMap[key]) {
+                  return false;
+                }
+              }
+              return true;
+            });
+          } else {
+            return this.tableData;
           }
-          return true;
-        });
-      } else {
-        return this.tableData;
-      }
-    },
+        },
   },
   async created() {
-    this.tabPageHeaders = this.resourceHeaders;
-  },
+        this.tabPageHeaders = this.resourceHeaders;
+      },
   mounted() {
-    this.doUiAction('getTableData');
-  },
+        this.doUiAction('getTableData');
+      },
   methods: {
     async doUiAction(uiActionId, uiActionData) {
       try {
@@ -720,12 +720,22 @@ new Vue({
           whereIn[fieldKey] = fieldValue;
         }
       }
+
+      let whereOrOptions = [];
+      if (this.keyword) {
+        if (!this.keywordFieldList || this.keywordFieldList.length === 0) {
+          console.warn('keywordFieldList is empty');
+        }
+        this.keywordFieldList.forEach(fieldKey => {
+          whereOrOptions.push([fieldKey, 'like', '%' + this.keyword.trim() + '%']);
+        });
+      }
       let orderBy = [{column: 'operationAt', order: 'desc'}];
 
       let limit = null;
       let offset = null;
 
-      this.tableParams = { where, whereLike, whereIn, limit, offset, orderBy };
+      this.tableParams = { where, whereLike, whereIn, limit, offset, orderBy, whereOrOptions };
     },
     // 准备请求参数-自定义
     prepareTableParams() {
@@ -937,80 +947,80 @@ new Vue({
     },
     // ---------- Custom uiAction >>>>>>>>>>>> --------
     async getTableData() {
-      this.isTableLoading = true;
-      const result = await window.jianghuAxios({
-        data: {
-          appData: {
-            pageId: 'resourcePageManagement',
-            actionId: `selectItemListOf${this.pageId}`
-          }
-        }
-      });
-      this.tableDataFromBackend = result.data.appData.resultData.rows;
-      this.isTableLoading = false;
-    },
+          this.isTableLoading = true;
+          const result = await window.jianghuAxios({
+            data: {
+              appData: {
+                pageId: 'resourcePageManagement',
+                actionId: `selectItemListOf${this.pageId}`
+              }
+            }
+          });
+          this.tableDataFromBackend = result.data.appData.resultData.rows;
+          this.isTableLoading = false;
+        },
     async prepareDoCreateItem() {
-      this.createActionId = `insertItemOf${this.pageId}`;
-      this.createActionData = this.createItem;
-    },
+          this.createActionId = `insertItemOf${this.pageId}`;
+          this.createActionData = this.createItem;
+        },
     async doCreateItem() {
-      await window.vtoast.loading("保存中");
-      await window.jianghuAxios({
-        data: {
-          appData: {
-            pageId: 'resourcePageManagement',
-            actionId: this.createActionId,
-            actionData: this.createActionData
-          }
-        }
-      })
-      await window.vtoast.success("保存成功");
-    },
+          await window.vtoast.loading("保存中");
+          await window.jianghuAxios({
+            data: {
+              appData: {
+                pageId: 'resourcePageManagement',
+                actionId: this.createActionId,
+                actionData: this.createActionData
+              }
+            }
+          })
+          await window.vtoast.success("保存成功");
+        },
     async prepareDoUpdateItem() {
-      const {id, ...data} = this.updateItem;
-      this.updateActionId = `updateItemOf${this.pageId}`;
-      this.updateItemId = id;
-      this.updateActionData = data;
-    },
+          const {id, ...data} = this.updateItem;
+          this.updateActionId = `updateItemOf${this.pageId}`;
+          this.updateItemId = id;
+          this.updateActionData = data;
+        },
     async doUpdateItem() {
-      await window.vtoast.loading("保存中");
-      delete this.updateItem.id;
-      await window.jianghuAxios({
-        data: {
-          appData: {
-            pageId: 'resourcePageManagement',
-            actionId: this.updateActionId,
-            actionData: this.updateActionData,
-            where: {id: this.updateItemId}
-          }
-        }
-      })
-      await window.vtoast.success("修改成功");
-    },
+          await window.vtoast.loading("保存中");
+          delete this.updateItem.id;
+          await window.jianghuAxios({
+            data: {
+              appData: {
+                pageId: 'resourcePageManagement',
+                actionId: this.updateActionId,
+                actionData: this.updateActionData,
+                where: {id: this.updateItemId}
+              }
+            }
+          })
+          await window.vtoast.success("修改成功");
+        },
     async prepareDeleteItem(funObj) {
-      this.deleteItemId = funObj.id;
-      this.deleteActionId = `deleteItemOf${this.pageId}`;
-    },
+          this.deleteItemId = funObj.id;
+          this.deleteActionId = `deleteItemOf${this.pageId}`;
+        },
     async confirmDeleteItemDialog() {
-      if (await window.confirmDialog({title: "删除", content: "确定删除吗？"}) === false) {
-        throw new Error("[confirmDeleteItemDialog] 否");
-      }
-    },
-    async doDeleteItem() {
-      window.vtoast.loading('正在删除');
-      await window.jianghuAxios({
-        data: {
-          appData: {
-            pageId: 'resourcePageManagement',
-            actionId: this.deleteActionId,
-            where: {id: this.deleteItemId}
+          if (await window.confirmDialog({title: "删除", content: "确定删除吗？"}) === false) {
+            throw new Error("[confirmDeleteItemDialog] 否");
           }
-        }
-      });
-      window.vtoast.success('删除成功');
-      this.deleteActionId = null;
-      this.deleteItemId = null;
-    },
+        },
+    async doDeleteItem() {
+          window.vtoast.loading('正在删除');
+          await window.jianghuAxios({
+            data: {
+              appData: {
+                pageId: 'resourcePageManagement',
+                actionId: this.deleteActionId,
+                where: {id: this.deleteItemId}
+              }
+            }
+          });
+          window.vtoast.success('删除成功');
+          this.deleteActionId = null;
+          this.deleteItemId = null;
+        },
     // ---------- <<<<<<<<<<< Custom uiAction ---------
 
   }
